@@ -33,7 +33,7 @@ namespace Client
             //controllo con server
             //scrittura
             UdpClient client = new UdpClient();
-            byte[] data = Encoding.ASCII.GetBytes("sto facendo una richiesta");
+            byte[] data = Encoding.ASCII.GetBytes("posso entrare?");
             client.Send(data, data.Length, "localhost", 12345);
 
             //lettura
@@ -65,6 +65,12 @@ namespace Client
 
                 //chiude il form attuale
                 this.Hide();
+            }
+            else if(risposta == "server pieno")
+            {
+                //mostra messaggio di errore
+                labelErrore.Enabled = true;
+                labelErrore.Text = "Errore, troppe persone nel server";
             }
             else
             {
