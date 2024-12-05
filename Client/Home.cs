@@ -33,7 +33,7 @@ namespace Client
             //controllo con server
             //scrittura
             UdpClient client = new UdpClient();
-            byte[] data = Encoding.ASCII.GetBytes("posso entrare?");
+            byte[] data = Encoding.ASCII.GetBytes("Join");
             client.Send(data, data.Length, "localhost", 12345);
 
             //lettura
@@ -55,18 +55,32 @@ namespace Client
             }
 
             String risposta = Encoding.ASCII.GetString(dataReceived);
-            if (risposta == "puoi entrare")
+            if (risposta == "Benvenuto! aspettando avversario...")
             {
-                //crea una nuova istanza del FormSceltaPersonaggio
-                FormSceltaPersonaggio sceltaPersonaggio = new FormSceltaPersonaggio();
+                labelErrore.Enabled = true;
+                labelErrore.Text = risposta;
 
-                //mostra il nuovo form
-                sceltaPersonaggio.Show();
+                //aspetta di ricevere dal server la conferma della presenza di entrambi i giocatori
+                Task t = Task.Factory.StartNew(() =>
+                {
+                    dataReceived = client.Receive(ref riceveEP);
+                });
+                await t;
 
-                //chiude il form attuale
-                this.Hide();
+                risposta = Encoding.ASCII.GetString(dataReceived);
+                if (risposta == "Gioco iniziato")
+                {
+                    //crea una nuova istanza del FormSceltaPersonaggio
+                    FormSceltaPersonaggio sceltaPersonaggio = new FormSceltaPersonaggio();
+
+                    //mostra il nuovo form
+                    sceltaPersonaggio.Show();
+
+                    //chiude il form attuale
+                    this.Hide();
+                }
             }
-            else if(risposta == "server pieno")
+            else if(risposta == "Server pieno")
             {
                 //mostra messaggio di errore
                 labelErrore.Enabled = true;
