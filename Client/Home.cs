@@ -57,11 +57,11 @@ namespace Client
             String risposta = Encoding.ASCII.GetString(dataReceived);
             if (risposta == "puoi entrare")
             {
-                //crea una nuova istanza del GameForm
-                GameForm gameForm = new GameForm();
+                //crea una nuova istanza del FormSceltaPersonaggio
+                FormSceltaPersonaggio sceltaPersonaggio = new FormSceltaPersonaggio();
 
                 //mostra il nuovo form
-                gameForm.Show();
+                sceltaPersonaggio.Show();
 
                 //chiude il form attuale
                 this.Hide();
