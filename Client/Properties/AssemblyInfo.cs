@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // Le informazioni generali relative a un assembly sono controllate dal seguente 
 // set di attributi. Modificare i valori di questi attributi per modificare le informazioni
 // associate a un assembly.
-[assembly: AssemblyTitle("Client")]
+[assembly: AssemblyTitle("corretto")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Client")]
+[assembly: AssemblyProduct("corretto")]
 [assembly: AssemblyCopyright("Copyright ©  2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Se il progetto viene esposto a COM, il GUID seguente verrà utilizzato come ID della libreria dei tipi
-[assembly: Guid("ea0f7bfa-7ee4-4e72-8d7b-b17356ac4f65")]
+[assembly: Guid("ef571688-99b4-4cbc-bcbe-2953b4a23b5e")]
 
 // Le informazioni sulla versione di un assembly sono costituite dai seguenti quattro valori:
 //
@@ -29,5 +29,8 @@ using System.Runtime.InteropServices;
 //      Numero di build
 //      Revisione
 //
+// È possibile specificare tutti i valori oppure impostare valori predefiniti per i numeri relativi alla revisione e alla build
+// usando l'asterisco '*' come illustrato di seguito:
+// [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
