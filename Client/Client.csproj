@@ -84,9 +84,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="UserControls\UserControlGioco.resx">
-      <DependentUpon>UserControlGioco.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\UserControlHome.resx">
       <DependentUpon>UserControlHome.cs</DependentUpon>
     </EmbeddedResource>
