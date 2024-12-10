@@ -45,8 +45,10 @@ namespace corretto
             //occupare tutto lo spazio disponibile nel pannello
             selezionePersonaggio.Dock = DockStyle.Fill;
 
-            selezionePersonaggio.PersonaggioSelezionato += (s, personaggio) => LoadGioco(personaggio);
-            
+            //assegna al bottone play funzione LoadGioco
+            //all'evento del pulsante play cliccato, viene associata funzione
+            selezionePersonaggio.PlayClicked += (s, personaggio) => LoadGioco();
+
             //vengono tolti i controlli precedenti
             panelContainer.Controls.Clear();
             
@@ -54,10 +56,10 @@ namespace corretto
             panelContainer.Controls.Add(selezionePersonaggio);
         }
 
-        private void LoadGioco(string personaggio)
+        private void LoadGioco()
         {
             //creazione controllo utente schermata di gioco
-            var gioco = new UserControlGioco(personaggio);
+            var gioco = new UserControlGioco();
             //occupare tutto lo spazio disponibile nel pannello
             gioco.Dock = DockStyle.Fill;
             //vengono tolti i controlli precedenti

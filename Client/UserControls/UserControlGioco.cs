@@ -17,10 +17,10 @@ namespace corretto.UserControls
         private string personaggio;
         private UdpClient client;
         private IPEndPoint serverEndpoint;
-        public UserControlGioco(string personaggioSelezionato)
+        public UserControlGioco()
         {
             InitializeComponent();
-            personaggio = personaggioSelezionato;
+            //prendere dal server personaggio
 
             client = new UdpClient();
             serverEndpoint = new IPEndPoint(IPAddress.Parse("localhost"), 12345);
@@ -70,6 +70,11 @@ namespace corretto.UserControls
                     }
                 }
             }
+        }
+
+        private void UserControlGioco_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
