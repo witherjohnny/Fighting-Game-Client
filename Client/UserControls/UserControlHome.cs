@@ -57,6 +57,11 @@ namespace corretto.UserControls
             //gestisce la risposta del server
             if (risposta.StartsWith("Benvenuto"))
             {
+                //server assegna id, Benvenuto;1
+                //split explode controllo e lo mette in una variabile per tutta la durata (stessa cosa da fare con il personaggio)
+                //dati client deve tenere le sue informazioni, il server prende solo quelle dell'altro
+
+
                 //il server ha accettato il client
                 OnPlayClicked();
             }

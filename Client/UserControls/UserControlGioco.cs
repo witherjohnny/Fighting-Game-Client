@@ -9,69 +9,83 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace corretto.UserControls
 {
     public partial class UserControlGioco : UserControl
     {
-        private string personaggio;
-        private UdpClient client;
-        private IPEndPoint serverEndpoint;
+        /*private ProgressBar progressBarPlayer1;
+        private ProgressBar progressBarPlayer2;
+
+
+
+        private Image player1Image;
+        private Image player2Image;
+
+        private int player1X, player1Y, player1Width, player1Height;
+        private int player2X, player2Y, player2Width, player2Height;
+
+        private string player2Character; 
+        private TcpClient client;
+        private Thread listenerThread;*/
+
         public UserControlGioco()
         {
             InitializeComponent();
-            //prendere dal server personaggio
+            InitializeGameUI();
 
-            client = new UdpClient();
-            serverEndpoint = new IPEndPoint(IPAddress.Parse("localhost"), 12345);
-
-            this.KeyDown += OnKeyDown;
-            StartReceiving();
+            //connessione al server
+            ConnectToServer();
         }
-        private void OnKeyDown(object sender, KeyEventArgs e)
+
+        private void InitializeGameUI()
         {
-            // Invio movimento al server
-            string movimento = string.Empty;
-
-            switch (e.KeyCode)
-            {
-                case Keys.W: movimento = "0;-1"; break; // Su
-                case Keys.S: movimento = "0;1"; break; // Giù
-                case Keys.A: movimento = "-1;0"; break; // Sinistra
-                case Keys.D: movimento = "1;0"; break; // Destra
-            }
-
-            if (!string.IsNullOrEmpty(movimento))
-            {
-                byte[] data = Encoding.ASCII.GetBytes(movimento);
-                client.Send(data, data.Length, serverEndpoint);
-            }
+            
         }
 
-        private async void StartReceiving()
+        private void CanvasPanel_Paint(object sender, PaintEventArgs e)
         {
-            while (true)
-            {
-                var response = await client.ReceiveAsync();
-                string message = Encoding.ASCII.GetString(response.Buffer);
-
-                // Aggiorna posizione degli altri giocatori
-                string[] lines = message.Split('\n');
-                foreach (string line in lines)
-                {
-                    if (!string.IsNullOrEmpty(line))
-                    {
-                        string[] data = line.Split(';');
-                        string id = data[0];
-                        float x = float.Parse(data[1]);
-                        float y = float.Parse(data[2]);
-
-                        // TODO: Aggiorna posizione dei giocatori sulla mappa
-                    }
-                }
-            }
+            
         }
 
+
+        private void GameTimer_Tick(object sender, EventArgs e)
+        {
+           
+        }
+
+        private void GameForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            
+        }
+
+        //connessione al server
+        private void ConnectToServer()
+        {
+            
+        }
+
+        //ricezione dati dal server
+        private void ReceiveData()
+        {
+           
+        }
+
+        // Gestione del messaggio ricevuto
+        private void HandleServerMessage(string message)
+        {
+            
+        }
+
+     
+
+        // Metodo chiamato dal Form principale alla chiusura
+        public void HandleFormClosing()
+        {
+            
+        }
+           
         private void UserControlGioco_Load(object sender, EventArgs e)
         {
 

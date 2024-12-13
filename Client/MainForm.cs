@@ -69,6 +69,18 @@ namespace corretto
             panelContainer.Controls.Add(gioco);
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+
+            // Verifica se il controllo attuale è UserControlGioco
+            if (panelContainer.Controls.Count > 0 && panelContainer.Controls[0] is UserControlGioco gioco)
+            {
+                gioco.HandleFormClosing(); // Chiamata al metodo specifico del controllo
+            }
+        }
+
+
         private void panelContainer_Paint(object sender, PaintEventArgs e)
         {
 
