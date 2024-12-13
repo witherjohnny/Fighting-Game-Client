@@ -35,25 +35,25 @@
             this.labelGiocatoreSelezionato = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonPlay = new System.Windows.Forms.Button();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.labelNomeGiocatoreSelezionato = new System.Windows.Forms.Label();
             this.pictureBoxPersonaggio1 = new System.Windows.Forms.PictureBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxStickman)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxVisualizzaPersonaggio)).BeginInit();
-            this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPersonaggio1)).BeginInit();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // pictureBoxStickman
             // 
             this.pictureBoxStickman.AccessibleDescription = "Stickman";
-            this.pictureBoxStickman.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBoxStickman.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.pictureBoxStickman.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxStickman.Image")));
-            this.pictureBoxStickman.Location = new System.Drawing.Point(387, 52);
+            this.pictureBoxStickman.Location = new System.Drawing.Point(3, 3);
             this.pictureBoxStickman.Name = "pictureBoxStickman";
-            this.pictureBoxStickman.Size = new System.Drawing.Size(114, 80);
+            this.pictureBoxStickman.Size = new System.Drawing.Size(162, 154);
             this.pictureBoxStickman.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxStickman.TabIndex = 0;
             this.pictureBoxStickman.TabStop = false;
@@ -62,14 +62,9 @@
             // 
             // pictureBoxVisualizzaPersonaggio
             // 
-            this.pictureBoxVisualizzaPersonaggio.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBoxVisualizzaPersonaggio.Location = new System.Drawing.Point(125, 290);
-            this.pictureBoxVisualizzaPersonaggio.MaximumSize = new System.Drawing.Size(100, 100);
-            this.pictureBoxVisualizzaPersonaggio.MinimumSize = new System.Drawing.Size(100, 100);
+            this.pictureBoxVisualizzaPersonaggio.Location = new System.Drawing.Point(3, 3);
             this.pictureBoxVisualizzaPersonaggio.Name = "pictureBoxVisualizzaPersonaggio";
-            this.pictureBoxVisualizzaPersonaggio.Size = new System.Drawing.Size(100, 100);
+            this.pictureBoxVisualizzaPersonaggio.Size = new System.Drawing.Size(185, 147);
             this.pictureBoxVisualizzaPersonaggio.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxVisualizzaPersonaggio.TabIndex = 1;
             this.pictureBoxVisualizzaPersonaggio.TabStop = false;
@@ -93,67 +88,32 @@
             // 
             // label1
             // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(387, 20);
+            this.label1.Location = new System.Drawing.Point(552, 63);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(86, 26);
+            this.label1.Size = new System.Drawing.Size(149, 13);
             this.label1.TabIndex = 4;
             this.label1.Text = "SELEZIONE PERSONAGGIO";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // buttonPlay
             // 
-            this.buttonPlay.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonPlay.Enabled = false;
-            this.buttonPlay.Location = new System.Drawing.Point(586, 490);
-            this.buttonPlay.MaximumSize = new System.Drawing.Size(50, 50);
-            this.buttonPlay.MinimumSize = new System.Drawing.Size(50, 50);
+            this.buttonPlay.Location = new System.Drawing.Point(1490, 696);
             this.buttonPlay.Name = "buttonPlay";
-            this.buttonPlay.Size = new System.Drawing.Size(50, 50);
+            this.buttonPlay.Size = new System.Drawing.Size(154, 74);
             this.buttonPlay.TabIndex = 5;
             this.buttonPlay.Text = "Play";
             this.buttonPlay.UseVisualStyleBackColor = true;
             this.buttonPlay.Click += new System.EventHandler(this.buttonPlay_Click);
             // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("tableLayoutPanel1.BackgroundImage")));
-            this.tableLayoutPanel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.tableLayoutPanel1.ColumnCount = 7;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 29F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 111F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 79F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 259F));
-            this.tableLayoutPanel1.Controls.Add(this.buttonPlay, 6, 7);
-            this.tableLayoutPanel1.Controls.Add(this.pictureBoxStickman, 4, 2);
-            this.tableLayoutPanel1.Controls.Add(this.pictureBoxVisualizzaPersonaggio, 1, 5);
-            this.tableLayoutPanel1.Controls.Add(this.label1, 4, 1);
-            this.tableLayoutPanel1.Controls.Add(this.labelNomeGiocatoreSelezionato, 1, 4);
-            this.tableLayoutPanel1.Controls.Add(this.pictureBoxPersonaggio1, 5, 2);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 8;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 44.87805F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 47F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 55.12195F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 108F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 92F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 66F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(842, 554);
-            this.tableLayoutPanel1.TabIndex = 6;
-            // 
             // labelNomeGiocatoreSelezionato
             // 
             this.labelNomeGiocatoreSelezionato.AutoSize = true;
-            this.labelNomeGiocatoreSelezionato.Location = new System.Drawing.Point(125, 182);
+            this.labelNomeGiocatoreSelezionato.Location = new System.Drawing.Point(292, 424);
             this.labelNomeGiocatoreSelezionato.Name = "labelNomeGiocatoreSelezionato";
             this.labelNomeGiocatoreSelezionato.Size = new System.Drawing.Size(35, 13);
             this.labelNomeGiocatoreSelezionato.TabIndex = 6;
@@ -162,18 +122,42 @@
             // pictureBoxPersonaggio1
             // 
             this.pictureBoxPersonaggio1.AccessibleDescription = "Personaggio1";
-            this.pictureBoxPersonaggio1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBoxPersonaggio1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.pictureBoxPersonaggio1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxPersonaggio1.Image")));
-            this.pictureBoxPersonaggio1.Location = new System.Drawing.Point(507, 52);
+            this.pictureBoxPersonaggio1.Location = new System.Drawing.Point(171, 3);
             this.pictureBoxPersonaggio1.Name = "pictureBoxPersonaggio1";
-            this.pictureBoxPersonaggio1.Size = new System.Drawing.Size(73, 80);
+            this.pictureBoxPersonaggio1.Size = new System.Drawing.Size(163, 154);
             this.pictureBoxPersonaggio1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxPersonaggio1.TabIndex = 7;
             this.pictureBoxPersonaggio1.TabStop = false;
             this.pictureBoxPersonaggio1.Tag = "";
             this.pictureBoxPersonaggio1.Click += new System.EventHandler(this.pictureBoxPersonaggio1_Click);
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.pictureBoxStickman, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.pictureBoxPersonaggio1, 1, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(934, 175);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(337, 160);
+            this.tableLayoutPanel1.TabIndex = 8;
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Controls.Add(this.pictureBoxVisualizzaPersonaggio, 0, 0);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(274, 453);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(207, 200);
+            this.tableLayoutPanel2.TabIndex = 9;
             // 
             // UserControlSelezionePersonaggio
             // 
@@ -181,18 +165,22 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.Controls.Add(this.tableLayoutPanel2);
+            this.Controls.Add(this.labelNomeGiocatoreSelezionato);
             this.Controls.Add(this.tableLayoutPanel1);
+            this.Controls.Add(this.buttonPlay);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.labelGiocatoreSelezionato);
             this.Controls.Add(this.labelPersonaggio);
             this.DoubleBuffered = true;
             this.Name = "UserControlSelezionePersonaggio";
-            this.Size = new System.Drawing.Size(842, 554);
+            this.Size = new System.Drawing.Size(1800, 842);
             this.Load += new System.EventHandler(this.UserControlSelezionePersonaggio_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxStickman)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxVisualizzaPersonaggio)).EndInit();
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPersonaggio1)).EndInit();
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -206,8 +194,9 @@
         private System.Windows.Forms.Label labelGiocatoreSelezionato;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button buttonPlay;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label labelNomeGiocatoreSelezionato;
         private System.Windows.Forms.PictureBox pictureBoxPersonaggio1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
     }
 }
