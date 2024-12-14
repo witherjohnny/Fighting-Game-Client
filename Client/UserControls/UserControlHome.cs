@@ -30,8 +30,8 @@ namespace corretto.UserControls
 
             //scrittura
             //usa UdpClient per la comunicazione
-            UdpClient udpClient = new UdpClient();
-
+            UdpClient udpClient = UdpClientSingleton.Instance;
+                
             //messaggio di richiesta al server
             string messaggio = "Join";
             byte[] data = Encoding.ASCII.GetBytes(messaggio);

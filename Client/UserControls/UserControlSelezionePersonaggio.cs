@@ -70,7 +70,7 @@ namespace corretto.UserControls
 
             //scrittura
             //usa UdpClient per la comunicazione
-            UdpClient udpClient = new UdpClient();
+            UdpClient udpClient = UdpClientSingleton.Instance;
 
             //messaggio di richiesta al server
             byte[] data = Encoding.ASCII.GetBytes(messaggio);
