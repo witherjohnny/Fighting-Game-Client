@@ -34,40 +34,48 @@
             // 
             // progressBarVitaGiocatore1
             // 
-            this.progressBarVitaGiocatore1.Location = new System.Drawing.Point(192, 93);
+            this.progressBarVitaGiocatore1.Location = new System.Drawing.Point(12, 21);
+            this.progressBarVitaGiocatore1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.progressBarVitaGiocatore1.Name = "progressBarVitaGiocatore1";
-            this.progressBarVitaGiocatore1.Size = new System.Drawing.Size(100, 23);
+            this.progressBarVitaGiocatore1.Size = new System.Drawing.Size(133, 28);
             this.progressBarVitaGiocatore1.TabIndex = 0;
             // 
             // progressBarVitaGiocatore2
             // 
-            this.progressBarVitaGiocatore2.Location = new System.Drawing.Point(926, 93);
+            this.progressBarVitaGiocatore2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressBarVitaGiocatore2.Location = new System.Drawing.Point(1134, 21);
+            this.progressBarVitaGiocatore2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.progressBarVitaGiocatore2.Name = "progressBarVitaGiocatore2";
-            this.progressBarVitaGiocatore2.Size = new System.Drawing.Size(100, 23);
+            this.progressBarVitaGiocatore2.Size = new System.Drawing.Size(133, 28);
             this.progressBarVitaGiocatore2.TabIndex = 1;
             // 
             // canvasPanel
             // 
-            this.canvasPanel.Location = new System.Drawing.Point(111, 213);
+            this.canvasPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.canvasPanel.Location = new System.Drawing.Point(0, 57);
+            this.canvasPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.canvasPanel.Name = "canvasPanel";
-            this.canvasPanel.Size = new System.Drawing.Size(951, 428);
+            this.canvasPanel.Size = new System.Drawing.Size(1280, 663);
             this.canvasPanel.TabIndex = 2;
             this.canvasPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.CanvasPanel_Paint);
             // 
             // gameTimer
             // 
-            this.gameTimer.Interval = 16; //60 FPS
+            this.gameTimer.Interval = 16;
             this.gameTimer.Tick += new System.EventHandler(this.GameTimer_Tick);
             // 
             // UserControlGioco
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.canvasPanel);
             this.Controls.Add(this.progressBarVitaGiocatore2);
             this.Controls.Add(this.progressBarVitaGiocatore1);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "UserControlGioco";
-            this.Size = new System.Drawing.Size(1276, 692);
+            this.Size = new System.Drawing.Size(1280, 720);
             this.Load += new System.EventHandler(this.UserControlGioco_Load);
             this.ResumeLayout(false);
 
