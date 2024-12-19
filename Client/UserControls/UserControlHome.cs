@@ -57,7 +57,7 @@ namespace corretto.UserControls
             //gestisce la risposta del server
             if (risposta.StartsWith("Benvenuto"))
             {
-                //server assegna id, Benvenuto;1
+                //server assegna id es: Benvenuto;1
                 //split explode controllo e lo mette in una variabile per tutta la durata (stessa cosa da fare con il personaggio)
                 //dati client deve tenere le sue informazioni, il server prende solo quelle dell'altro
 
@@ -83,6 +83,11 @@ namespace corretto.UserControls
             {
                 PlayClicked.Invoke(this, EventArgs.Empty);
             }
+        }
+
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

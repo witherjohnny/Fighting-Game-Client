@@ -37,35 +37,28 @@ namespace corretto
             //mette controllo pagina home nel panel del form principale
             panelContainer.Controls.Add(home);
         }
-
         private void LoadSelezionePersonaggio()
         {
-            //creazione controllo utente schermata selezione personaggi
+            //creazione del controllo utente per la selezione del personaggio
             var selezionePersonaggio = new UserControlSelezionePersonaggio();
-            //occupare tutto lo spazio disponibile nel pannello
             selezionePersonaggio.Dock = DockStyle.Fill;
 
-            //assegna al bottone play funzione LoadGioco
-            //all'evento del pulsante play cliccato, viene associata funzione
-            selezionePersonaggio.PlayClicked += (s, personaggio) => LoadGioco();
+            //assegna la funzione LoadGioco all'evento PlayClicked
+            selezionePersonaggio.PlayClicked += (personaggio) => LoadGioco(personaggio);
 
-            //vengono tolti i controlli precedenti
+            //sostituisce i controlli precedenti nel pannello
             panelContainer.Controls.Clear();
-            
-            //e viene aggiunto il controllo utente selezione personaggio
             panelContainer.Controls.Add(selezionePersonaggio);
         }
 
-        private void LoadGioco()
+        private void LoadGioco(string personaggio)
         {
-            //creazione controllo utente schermata di gioco
-            var gioco = new UserControlGioco();
-            //occupare tutto lo spazio disponibile nel pannello
+            //creazione del controllo utente per il gioco, passando il personaggio selezionato
+            var gioco = new UserControlGioco(personaggio);
             gioco.Dock = DockStyle.Fill;
-            //vengono tolti i controlli precedenti
+
+            //sostituisce i controlli precedenti nel pannello
             panelContainer.Controls.Clear();
-            
-            //e viene aggiunto il controllo utente del gioco
             panelContainer.Controls.Add(gioco);
         }
 

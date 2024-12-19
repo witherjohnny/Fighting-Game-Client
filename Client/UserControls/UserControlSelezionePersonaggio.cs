@@ -3,19 +3,30 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace corretto.UserControls
 {
     //schermata per selezionare il personaggio
     public partial class UserControlSelezionePersonaggio : UserControl
     {
-        public event EventHandler PlayClicked;
+        public event Action<string> PlayClicked; // Usa un Action con un parametro stringa
+
+        protected virtual void OnPlayClicked(string personaggio)
+        {
+            if(PlayClicked != null)
+            {
+                PlayClicked.Invoke(personaggio);
+            }    
+        }
+
 
         public UserControlSelezionePersonaggio()
         {
@@ -96,20 +107,16 @@ namespace corretto.UserControls
 
             String risposta = Encoding.ASCII.GetString(dataReceived);
 
-            //gestisce la risposta del server
-            if(risposta == "Gioco iniziato")
+
+
+            // Gestisce la risposta del server
+            if (risposta == "Gioco iniziato")
             {
-                //il server ha accettato il client
-                OnPlayClicked();
+                OnPlayClicked(personaggio); // passa il personaggio selezionato
             }
-
-        }
-
-        protected virtual void OnPlayClicked()
-        {
-            if (PlayClicked != null)
+            else
             {
-                PlayClicked.Invoke(this, EventArgs.Empty);
+                MessageBox.Show("In attesa del secondo player");
             }
         }
 

@@ -37,7 +37,7 @@
             // buttonPlay
             // 
             this.buttonPlay.Location = new System.Drawing.Point(510, 292);
-            this.buttonPlay.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonPlay.Margin = new System.Windows.Forms.Padding(4);
             this.buttonPlay.Name = "buttonPlay";
             this.buttonPlay.Size = new System.Drawing.Size(276, 169);
             this.buttonPlay.TabIndex = 0;
@@ -58,7 +58,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 268F));
             this.tableLayoutPanel1.Controls.Add(this.buttonPlay, 1, 1);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -66,6 +66,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 144F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1280, 720);
             this.tableLayoutPanel1.TabIndex = 1;
+            this.tableLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel1_Paint);
             // 
             // UserControlHome
             // 
@@ -73,7 +74,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "UserControlHome";
             this.Size = new System.Drawing.Size(1280, 720);
             this.tableLayoutPanel1.ResumeLayout(false);
