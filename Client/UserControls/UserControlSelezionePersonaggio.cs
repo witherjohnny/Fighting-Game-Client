@@ -19,18 +19,27 @@ namespace corretto.UserControls
     {
         public event Action<string> PlayClicked; // Usa un Action con un parametro stringa
 
+        private CharacterAnimation animationControl;
+
         protected virtual void OnPlayClicked(string personaggio)
         {
-            if(PlayClicked != null)
+            if (PlayClicked != null)
             {
                 PlayClicked.Invoke(personaggio);
-            }    
+            }
         }
 
 
         public UserControlSelezionePersonaggio()
         {
             InitializeComponent();
+
+            // Inizializza il controllo per l'animazione
+            animationControl = new CharacterAnimation();
+            animationControl.Location = new Point(300, 100); // Posizione personalizzata
+            animationControl.Size = new Size(128, 128); // Dimensione personalizzata
+            animationControl.Visible = false; // Nascondi inizialmente
+            Controls.Add(animationControl);
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
@@ -38,7 +47,7 @@ namespace corretto.UserControls
 
         }
 
-        
+
 
         private void UserControlSelezionePersonaggio_Load(object sender, EventArgs e)
         {
@@ -52,7 +61,6 @@ namespace corretto.UserControls
                 String nomePersonaggio = pictureBoxStickman.AccessibleDescription;
 
                 labelNomeGiocatoreSelezionato.Text = nomePersonaggio;
-                pictureBoxVisualizzaPersonaggio.Image = pictureBoxStickman.Image;
 
                 //abilita il pulsante per giocare
                 buttonPlay.Enabled = true;
@@ -65,6 +73,51 @@ namespace corretto.UserControls
 
 
         private void pictureBoxVisualizzaPersonaggio_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBoxPersonaggio1_Click(object sender, EventArgs e)
+        {
+            if (pictureBoxPersonaggio1.Image != null)
+            {
+                //nome del personaggio selezionato
+                String nomePersonaggio = pictureBoxPersonaggio1.AccessibleDescription;
+
+                //aggiorna il nome del personaggio selezionato
+                labelNomeGiocatoreSelezionato.Text = nomePersonaggio;
+
+                //configura il controllo dell'animazione
+                string spriteFolderPath = Path.Combine("Images/Sprites", nomePersonaggio);
+
+                try
+                {
+                    //configura e avvia l'animazione
+                    animationControl.LoadFrames(spriteFolderPath);
+                    animationControl.Visible = true;
+                    animationControl.StartAnimation();
+
+                    //abilita il pulsante "Play"
+                    buttonPlay.Enabled = true;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Errore nel caricamento delle animazioni: {ex.Message}", "Errore");
+                }
+            }
+            else
+            {
+                MessageBox.Show("L'immagine non è stata caricata correttamente.", "Errore");
+            }
+        }
+
+
+        private void tableLayoutPanel1_Paint_1(object sender, PaintEventArgs e)
         {
 
         }
@@ -118,34 +171,6 @@ namespace corretto.UserControls
             {
                 MessageBox.Show("In attesa del secondo player");
             }
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void pictureBoxPersonaggio1_Click(object sender, EventArgs e)
-        {
-            if (pictureBoxPersonaggio1.Image != null)
-            {
-                String nomePersonaggio = pictureBoxPersonaggio1.AccessibleDescription;
-
-                labelNomeGiocatoreSelezionato.Text = nomePersonaggio;
-                pictureBoxVisualizzaPersonaggio.Image = pictureBoxPersonaggio1.Image;
-
-                //abilita il pulsante per giocare
-                buttonPlay.Enabled = true;
-            }
-            else
-            {
-                MessageBox.Show("L'immagine non è stata caricata correttamente.", "Errore");
-            }
-        }
-
-        private void tableLayoutPanel1_Paint_1(object sender, PaintEventArgs e)
-        {
-
         }
     }
 }

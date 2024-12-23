@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Net;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -13,177 +14,165 @@ namespace corretto.UserControls
     {
         private string personaggio;
 
-        //dichiarazioni variabili per UI e logica di gioco
-        private ProgressBar progressBarPlayer1;
-        private ProgressBar progressBarPlayer2;
+        //private Timer gameTimer; // timer per aggiornare il gioco
+        private Player playerLocal; // player locale controllato dall'utente
+        private Player playerRemote; // player remoto aggiornato dal server
 
-        private Image player1Image;
-        private Image player2Image;
-
-        private int player1X, player1Y, player1Width, player1Height;
-        private int player2X, player2Y, player2Width, player2Height;
-
-        private string player2Character;
+        private const int FrameRate = 60; //frame al secondo (FPS)
 
         private UdpClient client;
-        private Thread listenerThread;
-
-        private bool isRunning = true;
 
         //costruttore del controllo
         public UserControlGioco(string personaggio)
         {
             InitializeComponent();
-            InitializeGameUI();
+            InitializeGame();
 
             this.personaggio = personaggio;
             label1.Text = $"Personaggio selezionato: {personaggio}";
             client = UdpClientSingleton.Instance;
-
-            //connessione al server
-            ConnectToServer();
         }
 
-        // Inizializza la UI di gioco
-        private void InitializeGameUI()
+        //inizializza la UI di gioco
+        private void InitializeGame()
         {
-            // Inizializza le dimensioni e le immagini dei giocatori
-            player1Width = player1Height = 50;
-            player2Width = player2Height = 50;
+            this.DoubleBuffered = true; // evita sfarfallio
+            this.Width = 800;
+            this.Height = 600;
 
-            player1X = 100;
-            player1Y = 100;
+            //inizializza i player
+            playerLocal = new Player(personaggio, 100, 300); // personaggio locale
+            playerRemote = new Player("warrior2", 500, 300); // personaggio remoto
 
-            player2X = 200;
-            player2Y = 200;
+            //inizializza il timer del gioco
+            System.Windows.Forms.Timer gameTimer = new System.Windows.Forms.Timer();
+            gameTimer.Interval = 1000 / FrameRate; //intervallo in millisecondi
+            gameTimer.Tick += GameTimer_Tick;
+            gameTimer.Start();
 
-            // Carica immagini di default (modifica i percorsi secondo necessità)
-            try
-            {
-                player1Image = Image.FromFile("Images/personaggio.png");
-                player2Image = Image.FromFile("Images/stickman.png");
-            }
-            catch
-            {
-                MessageBox.Show("Errore nel caricamento delle immagini dei personaggi!", "Errore");
-            }
+            //gestione eventi della tastiera
+            this.KeyDown += UserControlGioco_KeyDown;
+            this.KeyUp += UserControlGioco_KeyUp;
 
-            // Inizializza barre di progresso
-            progressBarPlayer1 = new ProgressBar { Value = 100, Maximum = 100, Minimum = 0, Location = new Point(10, 10), Size = new Size(200, 20) };
-            progressBarPlayer2 = new ProgressBar { Value = 100, Maximum = 100, Minimum = 0, Location = new Point(10, 40), Size = new Size(200, 20) };
-
-            // Aggiungi elementi al controllo
-            this.Controls.Add(progressBarPlayer1);
-            this.Controls.Add(progressBarPlayer2);
+            //avvia la comunicazione con il server
+            StartServerCommunication();
         }
 
-        // Disegna i giocatori sul pannello canvas
-        private void CanvasPanel_Paint(object sender, PaintEventArgs e)
-        {
-            Graphics g = e.Graphics;
-
-            // Disegna il giocatore 1
-            if (player1Image != null)
-                g.DrawImage(player1Image, player1X, player1Y, player1Width, player1Height);
-
-            // Disegna il giocatore 2
-            if (player2Image != null)
-                g.DrawImage(player2Image, player2X, player2Y, player2Width, player2Height);
-        }
-
-        // Timer per aggiornamento grafico
         private void GameTimer_Tick(object sender, EventArgs e)
         {
-            CanvasPanel.Invalidate();
+            //aggiorna lo stato dei player
+            playerLocal.Update();
+            playerRemote.Update();
+
+            //aggiorna il disegno
+            this.Invalidate(); //chiama OnPaint
         }
 
-        // Gestisce il movimento del giocatore 1 tramite input da tastiera
-        private void GameForm_KeyDown(object sender, KeyEventArgs e)
+        //disegna i giocatori sul pannello canvas
+        private void CanvasPanel_Paint(object sender, PaintEventArgs e)
         {
-            switch (e.KeyCode)
-            {
-                case Keys.W: player1Y -= 10; break; // Su
-                case Keys.S: player1Y += 10; break; // Giù
-                case Keys.A: player1X -= 10; break; // Sinistra
-                case Keys.D: player1X += 10; break; // Destra
-            }
+            //ottieni l'oggetto Graphics per disegnare
+            Graphics g = e.Graphics;
 
-            // Invia aggiornamenti al server
-            SendPlayerData();
+            //disegna lo sfondo del gioco
+            g.Clear(Color.Black); // Sfondo nero
+
+            //disegna il player locale
+            playerLocal.Draw(g);
+
+            //disegna il player remoto (dati dal server)
+            playerRemote.Draw(g);
+
+            //altri elementi grafici, come effetti, punteggi, ecc.
+
         }
 
-        // Connessione al server
-        private void ConnectToServer()
+
+        //metodo per ridisegnare il controllo
+        protected override void OnPaint(PaintEventArgs e)
         {
-            try
+            base.OnPaint(e);
+            Graphics g = e.Graphics;
+
+            //disegna entrambi i player
+            playerLocal.Draw(g);
+            playerRemote.Draw(g);
+        }
+
+        //gestione del movimento con tastiera
+        private void UserControlGioco_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Left)
             {
-                listenerThread = new Thread(ReceiveData);
-                listenerThread.Start();
+                playerLocal.X -= playerLocal.Speed;
+                playerLocal.ChangeAnimation(Action.Run);
             }
-            catch (Exception ex)
+            else if (e.KeyCode == Keys.Right)
             {
-                MessageBox.Show($"Errore di connessione: {ex.Message}", "Errore");
+                playerLocal.X += playerLocal.Speed;
+                playerLocal.ChangeAnimation(Action.Run);
+            }
+            else if (e.KeyCode == Keys.Space)
+            {
+                playerLocal.ChangeAnimation(Action.Attack);
             }
         }
 
-        // Ricezione dati dal server
-        private async void ReceiveData()
+
+        private void UserControlGioco_KeyUp(object sender, KeyEventArgs e)
         {
-            try
+            if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right || e.KeyCode == Keys.Space)
             {
-                String risposta = "";
-                do
+                playerLocal.ChangeAnimation(Action.Idle);
+            }
+        }
+        private async void StartServerCommunication()
+        {
+            //simula ricezione dati dal server in un thread separato
+            await Task.Run(() =>
+            {
+                while (true)
                 {
-                    //lettura
-                    IPEndPoint riceveEP = new IPEndPoint(IPAddress.Any, 0);
-
-                    byte[] dataReceived = null;
-
-                    //gestione thread
-                    Task t = Task.Factory.StartNew(() =>
+                    try
                     {
-                        dataReceived = client.Receive(ref riceveEP);
-                    });
-                    await t;
+                        //ricezione di una risposta dal server
+                        IPEndPoint riceveEP = new IPEndPoint(IPAddress.Any, 0);
 
-                    risposta = Encoding.ASCII.GetString(dataReceived);
+                        byte[] dataReceived = client.Receive(ref riceveEP);
 
-                    //gestisci il messaggio ricevuto
-                    HandleServerMessage(risposta);
-                } while (risposta != null);
-            }
-            catch (Exception ex)
-            {
-                if (isRunning)
-                    MessageBox.Show($"Errore durante la ricezione dei dati: {ex.Message}", "Errore");
-            }
-        }
-        /*
+                        //decodifica la risposta del server
+                        string serverResponse = Encoding.ASCII.GetString(dataReceived);
 
-        // Gestisce il messaggio ricevuto dal server
-        private void HandleServerMessage(string message)
-        {
-            // Messaggio formato: "id;x;y;character"
-            string[] parts = message.Split(';');
-            if (parts.Length == 4)
-            {
-                int id = int.Parse(parts[0]);
-                int x = int.Parse(parts[1]);
-                int y = int.Parse(parts[2]);
-                string character = parts[3];
+                        //aggiorna le coordinate del player remoto
+                        string[] data = serverResponse.Split(',');
+                        if (data.Length == 4)
+                        {
+                            int id = int.Parse(data[0]);
+                            int x = int.Parse(data[1]);
+                            int y = int.Parse(data[2]);
+                            string character = data[3];
 
-                // Aggiorna i dati del giocatore 2
-                if (id == 2)
-                {
-                    player2X = x;
-                    player2Y = y;
-                    if (player2Character != character)
+                            //aggiorna i dati del giocatore remoto
+                            if (id != playerLocal.Id)
+                            {
+                                playerRemote.X = x;
+                                playerRemote.Y = y;
+                                if (playerRemote.nome != character)
+                                {
+                                    playerRemote.nome = character;
+                                }
+                            }
+                        }
+
+                        Thread.Sleep(100); //aspetta prima del prossimo aggiornamento
+                    }
+                    catch (Exception ex)
                     {
-                        player2Character = character;
-                        player2Image = Image.FromFile($"Images/{character}.png");
+                        //gestione errori (se necessario, log o debug)
+                        Console.WriteLine("Errore nella comunicazione con il server: " + ex.Message);
                     }
                 }
-            }
+            });
         }
 
         // Invia i dati del giocatore 1 al server
@@ -191,11 +180,11 @@ namespace corretto.UserControls
         {
             try
             {
-                if (client != null && client.Connected)
+                if (client != null)
                 {
-                    string message = $"1;{player1X};{player1Y};{personaggio}";
+                    string message = $"1;{playerLocal.X};{playerLocal.Y};{personaggio}";
                     byte[] data = Encoding.ASCII.GetBytes(message);
-                    client.GetStream().Write(data, 0, data.Length);
+                    client.Send(data, data.Length, "127.0.0.1", 12345);
                 }
             }
             catch (Exception ex)
@@ -204,27 +193,14 @@ namespace corretto.UserControls
             }
         }
 
-        // Metodo chiamato alla chiusura del controllo
-        public void HandleFormClosing()
-        {
-            isRunning = false;
-
-            if (listenerThread != null && listenerThread.IsAlive)
-                listenerThread.Join();
-
-            if (client != null)
-                client.Close();
-        }
-
         private void UserControlGioco_Load(object sender, EventArgs e)
         {
-            // Eseguito al caricamento del controllo
+            //eseguito al caricamento del controllo
         }
 
         private void label2_Click(object sender, EventArgs e)
         {
-            // Eseguito al click sulla label2
+            //eseguito al click sulla label2
         }
-    }*/
     }
 }

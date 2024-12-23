@@ -44,14 +44,14 @@ namespace corretto
             selezionePersonaggio.Dock = DockStyle.Fill;
 
             //assegna la funzione LoadGioco all'evento PlayClicked
-            selezionePersonaggio.PlayClicked += (personaggio) => LoadGioco(personaggio);
+            //selezionePersonaggio.PlayClicked += (personaggio) => LoadGioco(personaggio);
 
             //sostituisce i controlli precedenti nel pannello
             panelContainer.Controls.Clear();
             panelContainer.Controls.Add(selezionePersonaggio);
         }
 
-        private void LoadGioco(string personaggio)
+        /*private void LoadGioco(string personaggio)
         {
             //creazione del controllo utente per il gioco, passando il personaggio selezionato
             var gioco = new UserControlGioco(personaggio);
@@ -60,17 +60,11 @@ namespace corretto
             //sostituisce i controlli precedenti nel pannello
             panelContainer.Controls.Clear();
             panelContainer.Controls.Add(gioco);
-        }
+        }*/
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
-
-            // Verifica se il controllo attuale è UserControlGioco
-            if (panelContainer.Controls.Count > 0 && panelContainer.Controls[0] is UserControlGioco gioco)
-            {
-                gioco.HandleFormClosing(); // Chiamata al metodo specifico del controllo
-            }
         }
 
 

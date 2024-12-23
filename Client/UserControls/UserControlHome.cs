@@ -31,7 +31,7 @@ namespace corretto.UserControls
             //scrittura
             //usa UdpClient per la comunicazione
             UdpClient udpClient = UdpClientSingleton.Instance;
-                
+
             //messaggio di richiesta al server
             string messaggio = "Join";
             byte[] data = Encoding.ASCII.GetBytes(messaggio);
@@ -79,7 +79,7 @@ namespace corretto.UserControls
 
         protected virtual void OnPlayClicked()
         {
-            if(PlayClicked != null)
+            if (PlayClicked != null)
             {
                 PlayClicked.Invoke(this, EventArgs.Empty);
             }
