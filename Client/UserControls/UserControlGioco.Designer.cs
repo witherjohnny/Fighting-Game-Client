@@ -1,4 +1,4 @@
-﻿namespace corretto.UserControls
+﻿namespace FightingGameClient.UserControls
 {
     partial class UserControlGioco
     {

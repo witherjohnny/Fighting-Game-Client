@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace corretto
+namespace FightingGameClient
 {
     public partial class CharacterAnimation : UserControl
     {

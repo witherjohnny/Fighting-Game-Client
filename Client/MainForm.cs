@@ -1,4 +1,4 @@
-﻿using corretto.UserControls;
+﻿using FightingGameClient.UserControls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace corretto
+namespace FightingGameClient
 {
     //la finestra principale che gestisce i UserControl
     public partial class MainForm : Form

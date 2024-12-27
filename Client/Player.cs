@@ -1,4 +1,4 @@
-﻿using corretto;
+﻿using FightingGameClient;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;

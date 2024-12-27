@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace corretto.UserControls
+namespace FightingGameClient.UserControls
 {
     //schermata per selezionare il personaggio
     public partial class UserControlSelezionePersonaggio : UserControl

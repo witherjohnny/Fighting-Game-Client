@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
-namespace corretto.UserControls
+namespace FightingGameClient.UserControls
 {
     //schermata iniziale con il pulsante "Play"
     //usato TableLayoutPanel per gestire meglio la grafica con il cambio di schermo

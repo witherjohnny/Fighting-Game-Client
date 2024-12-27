@@ -1,4 +1,4 @@
-﻿namespace corretto
+﻿namespace FightingGameClient
 {
     partial class MainForm
     {

@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace corretto.UserControls
+namespace FightingGameClient.UserControls
 {
     public partial class UserControlGioco : UserControl
     {
@@ -28,9 +28,16 @@ namespace corretto.UserControls
             InitializeComponent();
             InitializeGame();
 
+            disegnaPavimento();
+
             this.personaggio = personaggio;
             label1.Text = $"Personaggio selezionato: {personaggio}";
             client = UdpClientSingleton.Instance;
+        }
+
+        private void disegnaPavimento()
+        {
+            //new Panel;
         }
 
         //inizializza la UI di gioco
