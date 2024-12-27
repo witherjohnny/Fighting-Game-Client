@@ -10,15 +10,10 @@ namespace FightingGameClient
     public partial class CharacterAnimation : UserControl
     {
         private Timer animationTimer;
-        private Image spriteSheet;
-        private int frameWidth;
-        private int frameHeight;
+        private Image[] frames; //array per memorizzare i frame dell'animazione
         private int currentFrame;
         private int totalFrames;
         private Rectangle destinationRect;
-
-        //array per memorizzare gli offset X e Y per ogni frame
-        private Point[] frameOffsets;
 
         public CharacterAnimation()
         {
@@ -30,33 +25,23 @@ namespace FightingGameClient
         {
             try
             {
-                spriteSheet = Image.FromFile("Idle.png");
+                //carica i frame dalla cartella Idle come esempio predefinito
+                LoadFrames("Sprites/personaggio/Idle");
             }
-            catch (FileNotFoundException ex)
+            catch (Exception ex)
             {
-                MessageBox.Show("File 'Idle.png' non trovato. Assicurati che sia nella directory corretta.");
+                MessageBox.Show($"Errore durante il caricamento dei frame: {ex.Message}");
                 Application.Exit();
             }
 
-            totalFrames = 6;
-            frameWidth = spriteSheet.Width / totalFrames;
-            frameHeight = spriteSheet.Height;
+            //imposta la dimensione della finestra basata sui frame
+            this.ClientSize = new Size(frames[0].Width * 2, frames[0].Height * 2);
 
-            // Inizializza gli offset per ogni frame
-            // Modifica questi valori in base al tuo sprite sheet
-            frameOffsets = new Point[totalFrames];
-            for (int i = 0; i < totalFrames; i++)
-            {
-                frameOffsets[i] = new Point(0, 0); // Offset predefinito (0,0)
-            }
+            int x = (this.ClientSize.Width - frames[0].Width) / 2;
+            int y = (this.ClientSize.Height - frames[0].Height) / 2;
+            destinationRect = new Rectangle(x, y, frames[0].Width, frames[0].Height);
 
-
-            this.ClientSize = new Size(frameWidth * 2, frameHeight * 2);
-
-            int x = (this.ClientSize.Width - frameWidth) / 2;
-            int y = (this.ClientSize.Height - frameHeight) / 2;
-            destinationRect = new Rectangle(x, y, frameWidth, frameHeight);
-
+            //imposta il timer per l'animazione
             animationTimer = new Timer();
             animationTimer.Interval = 100;
             animationTimer.Tick += OnAnimationTick;
@@ -73,58 +58,37 @@ namespace FightingGameClient
         {
             base.OnPaint(e);
 
-            Rectangle sourceRect = new Rectangle(
-                currentFrame * frameWidth,
-                0,
-                frameWidth,
-                frameHeight
-            );
-
-            // Applica l'offset del frame corrente
-            Rectangle adjustedDestRect = new Rectangle(
-                destinationRect.X + frameOffsets[currentFrame].X,
-                destinationRect.Y + frameOffsets[currentFrame].Y,
-                destinationRect.Width,
-                destinationRect.Height
-            );
-
+            //disegna il frame corrente al centro della finestra
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
 
-            e.Graphics.DrawImage(spriteSheet, adjustedDestRect, sourceRect, GraphicsUnit.Pixel);
+            e.Graphics.DrawImage(frames[currentFrame], destinationRect);
         }
 
-        private void CharacterAnimation_Load(object sender, EventArgs e)
-        {
-            //codice da eseguire quando il controllo viene caricato
-            //Console.WriteLine("CharacterAnimation caricato correttamente.");
-        }
         public void LoadFrames(string spriteFolderPath)
         {
             try
             {
-                spriteSheet = Image.FromFile(Path.Combine(spriteFolderPath, "Idle.png"));
+                //recupera tutti i file PNG nella cartella specificata
+                string[] files = Directory.GetFiles(spriteFolderPath, "*.png").OrderBy(f => f).ToArray();
 
-                // Supponiamo che il totale dei frame sia determinato dal numero di frame nel file.
-                totalFrames = spriteSheet.Width / frameWidth;
-                frameWidth = spriteSheet.Width / totalFrames;
-                frameHeight = spriteSheet.Height;
-
-                // Reimposta l'animazione al primo frame.
-                currentFrame = 0;
-
-                // Reinizializza gli offset (se necessario).
-                frameOffsets = new Point[totalFrames];
-                for (int i = 0; i < totalFrames; i++)
+                if (files.Length == 0)
                 {
-                    frameOffsets[i] = new Point(0, 0); // Offset predefinito
+                    throw new Exception("Nessun frame trovato nella cartella specificata.");
                 }
 
-                this.Invalidate(); // Forza il ridisegno.
+                //carica i file come immagini
+                frames = files.Select(f => Image.FromFile(f)).ToArray();
+                totalFrames = frames.Length;
+
+                //reimposta l'animazione al primo frame
+                currentFrame = 0;
+
+                this.Invalidate(); //forza il ridisegno
             }
             catch (Exception ex)
             {
-                throw new Exception($"Errore durante il caricamento del sprite sheet: {ex.Message}");
+                throw new Exception($"Errore durante il caricamento dei frame dalla cartella '{spriteFolderPath}': {ex.Message}");
             }
         }
 
@@ -143,8 +107,5 @@ namespace FightingGameClient
                 animationTimer.Stop();
             }
         }
-
-
-
     }
 }

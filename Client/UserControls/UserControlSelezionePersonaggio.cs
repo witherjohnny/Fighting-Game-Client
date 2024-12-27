@@ -56,19 +56,7 @@ namespace FightingGameClient.UserControls
 
         private void pictureBoxStickman_Click(object sender, EventArgs e)
         {
-            if (pictureBoxStickman.Image != null)
-            {
-                String nomePersonaggio = pictureBoxStickman.AccessibleDescription;
 
-                labelNomeGiocatoreSelezionato.Text = nomePersonaggio;
-
-                //abilita il pulsante per giocare
-                buttonPlay.Enabled = true;
-            }
-            else
-            {
-                MessageBox.Show("L'immagine non è stata caricata correttamente.", "Errore");
-            }
         }
 
 
@@ -82,25 +70,36 @@ namespace FightingGameClient.UserControls
 
         }
 
-        private void pictureBoxPersonaggio1_Click(object sender, EventArgs e)
+        private void pictureBoxWarrior_2_Click(object sender, EventArgs e)
         {
-            if (pictureBoxPersonaggio1.Image != null)
+            if (pictureBoxWarrior_2.Image != null)
             {
                 //nome del personaggio selezionato
-                String nomePersonaggio = pictureBoxPersonaggio1.AccessibleDescription;
+                string nomePersonaggio = pictureBoxWarrior_2.AccessibleDescription;
 
                 //aggiorna il nome del personaggio selezionato
                 labelNomeGiocatoreSelezionato.Text = nomePersonaggio;
 
-                //configura il controllo dell'animazione
-                string spriteFolderPath = Path.Combine("Images/Sprites", nomePersonaggio);
+                //configura il percorso delle animazioni
+                string spriteFolderPath = Path.Combine("Sprites", nomePersonaggio, "Idle");
 
+                //ANIMAZIONE IDLE 
+                /*
                 try
                 {
-                    //configura e avvia l'animazione
+                    // rimuovi eventuali controlli esistenti nel TableLayoutPanel
+                    tableLayoutPanelVisualizzaPersonaggio.Controls.Clear();
+
+                    //crea una nuova istanza del controllo CharacterAnimation
+                    CharacterAnimation animationControl = new CharacterAnimation();
+
+                    //configura il controllo per caricare i frame e avviare l'animazione
                     animationControl.LoadFrames(spriteFolderPath);
                     animationControl.Visible = true;
                     animationControl.StartAnimation();
+
+                    //aggiungi il controllo al TableLayoutPanel
+                    tableLayoutPanelVisualizzaPersonaggio.Controls.Add(animationControl, 0, 0); // Riga 0, Colonna 0
 
                     //abilita il pulsante "Play"
                     buttonPlay.Enabled = true;
@@ -108,7 +107,57 @@ namespace FightingGameClient.UserControls
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Errore nel caricamento delle animazioni: {ex.Message}", "Errore");
+                }*/
+                //abilita il pulsante "Play"
+                buttonPlay.Enabled = true;
+            }
+            else
+            {
+                MessageBox.Show("L'immagine non è stata caricata correttamente.", "Errore");
+            }
+        }
+
+
+        private void pictureBoxWizard_Click(object sender, EventArgs e)
+        {
+            if (pictureBoxFireWizard.Image != null)
+            {
+                //nome del personaggio selezionato
+                string nomePersonaggio = pictureBoxFireWizard.AccessibleDescription;
+
+                //aggiorna il nome del personaggio selezionato
+                labelNomeGiocatoreSelezionato.Text = nomePersonaggio;
+
+                //configura il percorso delle animazioni
+                string spriteFolderPath = Path.Combine("Sprites", nomePersonaggio, "Idle");
+
+                //ANIMAZIONE IDLE 
+                /*
+                try
+                {
+                    // rimuovi eventuali controlli esistenti nel TableLayoutPanel
+                    tableLayoutPanelVisualizzaPersonaggio.Controls.Clear();
+
+                    //crea una nuova istanza del controllo CharacterAnimation
+                    CharacterAnimation animationControl = new CharacterAnimation();
+
+                    //configura il controllo per caricare i frame e avviare l'animazione
+                    animationControl.LoadFrames(spriteFolderPath);
+                    animationControl.Visible = true;
+                    animationControl.StartAnimation();
+
+                    //aggiungi il controllo al TableLayoutPanel
+                    tableLayoutPanelVisualizzaPersonaggio.Controls.Add(animationControl, 0, 0); // Riga 0, Colonna 0
+
+                    //sbilita il pulsante "Play"
+                    buttonPlay.Enabled = true;
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Errore nel caricamento delle animazioni: {ex.Message}", "Errore");
+                }*/
+                //abilita il pulsante "Play"
+                buttonPlay.Enabled = true;
             }
             else
             {
@@ -162,7 +211,7 @@ namespace FightingGameClient.UserControls
 
 
 
-            // Gestisce la risposta del server
+            //gestisce la risposta del server
             if (risposta == "Gioco iniziato")
             {
                 OnPlayClicked(personaggio); // passa il personaggio selezionato

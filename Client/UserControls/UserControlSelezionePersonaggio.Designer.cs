@@ -29,33 +29,33 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserControlSelezionePersonaggio));
-            this.pictureBoxStickman = new System.Windows.Forms.PictureBox();
+            this.pictureBoxWarrior_2 = new System.Windows.Forms.PictureBox();
             this.labelPersonaggio = new System.Windows.Forms.Label();
             this.labelGiocatoreSelezionato = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonPlay = new System.Windows.Forms.Button();
             this.labelNomeGiocatoreSelezionato = new System.Windows.Forms.Label();
-            this.pictureBoxPersonaggio1 = new System.Windows.Forms.PictureBox();
+            this.pictureBoxFireWizard = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxStickman)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPersonaggio1)).BeginInit();
+            this.tableLayoutPanelVisualizzaPersonaggio = new System.Windows.Forms.TableLayoutPanel();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxWarrior_2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFireWizard)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // pictureBoxStickman
+            // pictureBoxWarrior_2
             // 
-            this.pictureBoxStickman.AccessibleDescription = "Stickman";
-            this.pictureBoxStickman.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.pictureBoxStickman.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxStickman.Image")));
-            this.pictureBoxStickman.Location = new System.Drawing.Point(3, 3);
-            this.pictureBoxStickman.Name = "pictureBoxStickman";
-            this.pictureBoxStickman.Size = new System.Drawing.Size(162, 154);
-            this.pictureBoxStickman.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxStickman.TabIndex = 0;
-            this.pictureBoxStickman.TabStop = false;
-            this.pictureBoxStickman.Tag = "";
-            this.pictureBoxStickman.Click += new System.EventHandler(this.pictureBoxStickman_Click);
+            this.pictureBoxWarrior_2.AccessibleDescription = "Warrior_2";
+            this.pictureBoxWarrior_2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.pictureBoxWarrior_2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxWarrior_2.Image")));
+            this.pictureBoxWarrior_2.Location = new System.Drawing.Point(3, 3);
+            this.pictureBoxWarrior_2.Name = "pictureBoxWarrior_2";
+            this.pictureBoxWarrior_2.Size = new System.Drawing.Size(162, 154);
+            this.pictureBoxWarrior_2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxWarrior_2.TabIndex = 0;
+            this.pictureBoxWarrior_2.TabStop = false;
+            this.pictureBoxWarrior_2.Tag = "";
+            this.pictureBoxWarrior_2.Click += new System.EventHandler(this.pictureBoxWarrior_2_Click);
             // 
             // labelPersonaggio
             // 
@@ -106,19 +106,19 @@
             this.labelNomeGiocatoreSelezionato.TabIndex = 6;
             this.labelNomeGiocatoreSelezionato.Text = "Name";
             // 
-            // pictureBoxPersonaggio1
+            // pictureBoxFireWizard
             // 
-            this.pictureBoxPersonaggio1.AccessibleDescription = "warrior1";
-            this.pictureBoxPersonaggio1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.pictureBoxPersonaggio1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxPersonaggio1.Image")));
-            this.pictureBoxPersonaggio1.Location = new System.Drawing.Point(171, 3);
-            this.pictureBoxPersonaggio1.Name = "pictureBoxPersonaggio1";
-            this.pictureBoxPersonaggio1.Size = new System.Drawing.Size(163, 154);
-            this.pictureBoxPersonaggio1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxPersonaggio1.TabIndex = 7;
-            this.pictureBoxPersonaggio1.TabStop = false;
-            this.pictureBoxPersonaggio1.Tag = "";
-            this.pictureBoxPersonaggio1.Click += new System.EventHandler(this.pictureBoxPersonaggio1_Click);
+            this.pictureBoxFireWizard.AccessibleDescription = "FireWizard";
+            this.pictureBoxFireWizard.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.pictureBoxFireWizard.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxFireWizard.Image")));
+            this.pictureBoxFireWizard.Location = new System.Drawing.Point(171, 3);
+            this.pictureBoxFireWizard.Name = "pictureBoxFireWizard";
+            this.pictureBoxFireWizard.Size = new System.Drawing.Size(163, 154);
+            this.pictureBoxFireWizard.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxFireWizard.TabIndex = 7;
+            this.pictureBoxFireWizard.TabStop = false;
+            this.pictureBoxFireWizard.Tag = "";
+            this.pictureBoxFireWizard.Click += new System.EventHandler(this.pictureBoxWizard_Click);
             // 
             // tableLayoutPanel1
             // 
@@ -127,8 +127,8 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.pictureBoxStickman, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.pictureBoxPersonaggio1, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.pictureBoxWarrior_2, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.pictureBoxFireWizard, 1, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(467, 52);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
@@ -136,18 +136,18 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(337, 160);
             this.tableLayoutPanel1.TabIndex = 8;
             // 
-            // tableLayoutPanel2
+            // tableLayoutPanelVisualizzaPersonaggio
             // 
-            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.tableLayoutPanel2.BackColor = System.Drawing.Color.Transparent;
-            this.tableLayoutPanel2.ColumnCount = 1;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(108, 198);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(207, 200);
-            this.tableLayoutPanel2.TabIndex = 9;
+            this.tableLayoutPanelVisualizzaPersonaggio.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.tableLayoutPanelVisualizzaPersonaggio.BackColor = System.Drawing.Color.Transparent;
+            this.tableLayoutPanelVisualizzaPersonaggio.ColumnCount = 1;
+            this.tableLayoutPanelVisualizzaPersonaggio.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanelVisualizzaPersonaggio.Location = new System.Drawing.Point(108, 198);
+            this.tableLayoutPanelVisualizzaPersonaggio.Name = "tableLayoutPanelVisualizzaPersonaggio";
+            this.tableLayoutPanelVisualizzaPersonaggio.RowCount = 1;
+            this.tableLayoutPanelVisualizzaPersonaggio.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanelVisualizzaPersonaggio.Size = new System.Drawing.Size(207, 200);
+            this.tableLayoutPanelVisualizzaPersonaggio.TabIndex = 9;
             // 
             // UserControlSelezionePersonaggio
             // 
@@ -155,7 +155,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.Controls.Add(this.tableLayoutPanel2);
+            this.Controls.Add(this.tableLayoutPanelVisualizzaPersonaggio);
             this.Controls.Add(this.labelNomeGiocatoreSelezionato);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.buttonPlay);
@@ -166,8 +166,8 @@
             this.Name = "UserControlSelezionePersonaggio";
             this.Size = new System.Drawing.Size(960, 585);
             this.Load += new System.EventHandler(this.UserControlSelezionePersonaggio_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxStickman)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPersonaggio1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxWarrior_2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFireWizard)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -176,14 +176,14 @@
 
         #endregion
 
-        private System.Windows.Forms.PictureBox pictureBoxStickman;
+        private System.Windows.Forms.PictureBox pictureBoxWarrior_2;
         private System.Windows.Forms.Label labelPersonaggio;
         private System.Windows.Forms.Label labelGiocatoreSelezionato;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button buttonPlay;
         private System.Windows.Forms.Label labelNomeGiocatoreSelezionato;
-        private System.Windows.Forms.PictureBox pictureBoxPersonaggio1;
+        private System.Windows.Forms.PictureBox pictureBoxFireWizard;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanelVisualizzaPersonaggio;
     }
 }

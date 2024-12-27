@@ -29,27 +29,26 @@
             this.progressBarVitaGiocatore1 = new System.Windows.Forms.ProgressBar();
             this.progressBarVitaGiocatore2 = new System.Windows.Forms.ProgressBar();
             this.CanvasPanel = new System.Windows.Forms.Panel();
-            this.gameTimer = new System.Windows.Forms.Timer(this.components);
-            this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.gameTimer = new System.Windows.Forms.Timer(this.components);
+            this.CanvasPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // progressBarVitaGiocatore1
             // 
-            this.progressBarVitaGiocatore1.Location = new System.Drawing.Point(87, 21);
-            this.progressBarVitaGiocatore1.Margin = new System.Windows.Forms.Padding(4);
+            this.progressBarVitaGiocatore1.Location = new System.Drawing.Point(68, 11);
             this.progressBarVitaGiocatore1.Name = "progressBarVitaGiocatore1";
-            this.progressBarVitaGiocatore1.Size = new System.Drawing.Size(133, 28);
+            this.progressBarVitaGiocatore1.Size = new System.Drawing.Size(100, 23);
             this.progressBarVitaGiocatore1.TabIndex = 0;
             this.progressBarVitaGiocatore1.Value = 100;
             // 
             // progressBarVitaGiocatore2
             // 
             this.progressBarVitaGiocatore2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBarVitaGiocatore2.Location = new System.Drawing.Point(1134, 21);
-            this.progressBarVitaGiocatore2.Margin = new System.Windows.Forms.Padding(4);
+            this.progressBarVitaGiocatore2.Location = new System.Drawing.Point(832, 11);
             this.progressBarVitaGiocatore2.Name = "progressBarVitaGiocatore2";
-            this.progressBarVitaGiocatore2.Size = new System.Drawing.Size(133, 28);
+            this.progressBarVitaGiocatore2.Size = new System.Drawing.Size(100, 23);
             this.progressBarVitaGiocatore2.TabIndex = 1;
             this.progressBarVitaGiocatore2.Value = 100;
             // 
@@ -58,52 +57,51 @@
             this.CanvasPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.CanvasPanel.Location = new System.Drawing.Point(0, 57);
-            this.CanvasPanel.Margin = new System.Windows.Forms.Padding(4);
+            this.CanvasPanel.Controls.Add(this.label2);
+            this.CanvasPanel.Controls.Add(this.progressBarVitaGiocatore1);
+            this.CanvasPanel.Controls.Add(this.label1);
+            this.CanvasPanel.Controls.Add(this.progressBarVitaGiocatore2);
+            this.CanvasPanel.Location = new System.Drawing.Point(0, 0);
             this.CanvasPanel.Name = "CanvasPanel";
-            this.CanvasPanel.Size = new System.Drawing.Size(1280, 663);
+            this.CanvasPanel.Size = new System.Drawing.Size(960, 585);
             this.CanvasPanel.TabIndex = 2;
             this.CanvasPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.CanvasPanel_Paint);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(783, 20);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(48, 13);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "Player 2:";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(13, 20);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(48, 13);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "Player 1:";
             // 
             // gameTimer
             // 
             this.gameTimer.Interval = 16;
             this.gameTimer.Tick += new System.EventHandler(this.GameTimer_Tick);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(14, 32);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(59, 16);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "Player 1:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(1068, 32);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(59, 16);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Player 2:";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
-            // 
             // UserControlGioco
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.CanvasPanel);
-            this.Controls.Add(this.progressBarVitaGiocatore2);
-            this.Controls.Add(this.progressBarVitaGiocatore1);
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "UserControlGioco";
-            this.Size = new System.Drawing.Size(1280, 720);
-            this.Load += new System.EventHandler(this.UserControlGioco_Load);
+            this.Size = new System.Drawing.Size(960, 585);
+            this.CanvasPanel.ResumeLayout(false);
+            this.CanvasPanel.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 

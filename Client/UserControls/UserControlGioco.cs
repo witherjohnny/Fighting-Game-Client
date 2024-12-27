@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
@@ -28,17 +29,77 @@ namespace FightingGameClient.UserControls
             InitializeComponent();
             InitializeGame();
 
+            disegnaBackground();
             disegnaPavimento();
 
             this.personaggio = personaggio;
             label1.Text = $"Personaggio selezionato: {personaggio}";
             client = UdpClientSingleton.Instance;
         }
+        private void disegnaBackground()
+        {
+            //percorso dell'immagine di sfondo
+            //sfondoGioco.png per sfondo normale
+            //sfondoBlur.png per sfondo blurrato
+
+            string immagineSfondo = Path.Combine("Sfondi", "sfondoGioco.png");
+
+            //verifica se il file esiste
+            if (!File.Exists(immagineSfondo))
+            {
+                MessageBox.Show($"Immagine dello sfondo non trovata: {immagineSfondo}", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                //carica l'immagine e imposta lo sfondo
+                CanvasPanel.BackgroundImage = Image.FromFile(immagineSfondo);
+                CanvasPanel.BackgroundImageLayout = ImageLayout.Stretch; //adatta l'immagine al pannello
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante il caricamento dello sfondo: {ex.Message}", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
 
         private void disegnaPavimento()
         {
-            //new Panel;
+            //percorso dell'immagine di sfondo del pavimento
+            string immaginePavimento = Path.Combine("Pavimenti", "pavimento1.png");
+
+            //verifica se il file esiste
+            if (!File.Exists(immaginePavimento))
+            {
+                MessageBox.Show($"Immagine del pavimento non trovata: {immaginePavimento}", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            //dimensioni del pavimento
+            int numeroBlocchi = 10; //blocchi pavimento
+            int larghezzaBlocco = this.Width / numeroBlocchi;
+            int altezzaBlocco = 50; //altezza fissa del pavimento
+            int yPavimento = this.Height - altezzaBlocco; //posizione verticale del pavimento
+
+            for (int i = 0; i < numeroBlocchi; i++)
+            {
+                Panel blocco = new Panel
+                {
+                    Width = larghezzaBlocco,
+                    Height = altezzaBlocco,
+                    BackColor = Color.Brown, //colore di fallback
+                    Location = new Point(i * larghezzaBlocco, yPavimento),
+                    BackgroundImage = Image.FromFile(immaginePavimento),
+                    BackgroundImageLayout = ImageLayout.Stretch //adatta l'immagine al blocco
+                };
+
+                //aggiungi ogni blocco al controllo
+                this.Controls.Add(blocco);
+            }
         }
+
 
         //inizializza la UI di gioco
         private void InitializeGame()
@@ -49,7 +110,7 @@ namespace FightingGameClient.UserControls
 
             //inizializza i player
             playerLocal = new Player(personaggio, 100, 300); // personaggio locale
-            playerRemote = new Player("warrior2", 500, 300); // personaggio remoto
+            //playerRemote = new Player("warrior2", 500, 300); // personaggio remoto
 
             //inizializza il timer del gioco
             System.Windows.Forms.Timer gameTimer = new System.Windows.Forms.Timer();
@@ -82,7 +143,7 @@ namespace FightingGameClient.UserControls
             Graphics g = e.Graphics;
 
             //disegna lo sfondo del gioco
-            g.Clear(Color.Black); // Sfondo nero
+            //g.Clear(Color.Black); // Sfondo nero
 
             //disegna il player locale
             playerLocal.Draw(g);
@@ -182,7 +243,8 @@ namespace FightingGameClient.UserControls
             });
         }
 
-        // Invia i dati del giocatore 1 al server
+        //invia i dati del giocatore locale al server
+        /*
         private void SendPlayerData()
         {
             try
@@ -198,16 +260,6 @@ namespace FightingGameClient.UserControls
             {
                 MessageBox.Show($"Errore durante l'invio dei dati: {ex.Message}", "Errore");
             }
-        }
-
-        private void UserControlGioco_Load(object sender, EventArgs e)
-        {
-            //eseguito al caricamento del controllo
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-            //eseguito al click sulla label2
-        }
+        }*/
     }
 }
