@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -10,37 +11,30 @@ namespace FightingGameClient
     public partial class CharacterAnimation : UserControl
     {
         private Timer animationTimer;
-        private Image[] frames; //array per memorizzare i frame dell'animazione
+        private List<Image> frames = new List<Image>(); //array per memorizzare i frame dell'animazione
         private int currentFrame;
         private int totalFrames;
-        private Rectangle destinationRect;
+        private String personaggio;
 
-        public CharacterAnimation()
+        public CharacterAnimation(String personaggio)
         {
             InitializeComponent();
-            this.DoubleBuffered = true;
+            this.personaggio = personaggio;
+            this.Dock = DockStyle.Fill;
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void CharacterAnimation_Load(object sender, EventArgs e)
         {
             try
             {
                 //carica i frame dalla cartella Idle come esempio predefinito
-                LoadFrames("Sprites/personaggio/Idle");
+                LoadFrames("Sprites/"+this.personaggio+"/Idle");
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Errore durante il caricamento dei frame: {ex.Message}");
-                Application.Exit();
             }
-
-            //imposta la dimensione della finestra basata sui frame
-            this.ClientSize = new Size(frames[0].Width * 2, frames[0].Height * 2);
-
-            int x = (this.ClientSize.Width - frames[0].Width) / 2;
-            int y = (this.ClientSize.Height - frames[0].Height) / 2;
-            destinationRect = new Rectangle(x, y, frames[0].Width, frames[0].Height);
-
+            
             //imposta il timer per l'animazione
             animationTimer = new Timer();
             animationTimer.Interval = 100;
@@ -51,26 +45,14 @@ namespace FightingGameClient
         private void OnAnimationTick(object sender, EventArgs e)
         {
             currentFrame = (currentFrame + 1) % totalFrames;
-            this.Invalidate();
+            this.BackgroundImage = frames[currentFrame];
         }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-
-            //disegna il frame corrente al centro della finestra
-            e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-
-            e.Graphics.DrawImage(frames[currentFrame], destinationRect);
-        }
-
         public void LoadFrames(string spriteFolderPath)
         {
             try
             {
                 //recupera tutti i file PNG nella cartella specificata
-                string[] files = Directory.GetFiles(spriteFolderPath, "*.png").OrderBy(f => f).ToArray();
+                string[] files = Directory.GetFiles(spriteFolderPath, "*.png").ToArray();
 
                 if (files.Length == 0)
                 {
@@ -78,8 +60,11 @@ namespace FightingGameClient
                 }
 
                 //carica i file come immagini
-                frames = files.Select(f => Image.FromFile(f)).ToArray();
-                totalFrames = frames.Length;
+                foreach (string immagine in files)
+                {
+                    frames.Add(Image.FromFile(immagine)) ;
+                    totalFrames = frames.Count;
+                }
 
                 //reimposta l'animazione al primo frame
                 currentFrame = 0;
@@ -107,5 +92,7 @@ namespace FightingGameClient
                 animationTimer.Stop();
             }
         }
+
+       
     }
 }

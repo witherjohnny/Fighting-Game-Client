@@ -28,6 +28,8 @@ namespace FightingGameClient.UserControls
         {
             InitializeComponent();
             InitializeGame();
+            //avvia la comunicazione con il server
+            StartServerCommunication();
 
             disegnaBackground();
             disegnaPavimento();
@@ -122,8 +124,7 @@ namespace FightingGameClient.UserControls
             this.KeyDown += UserControlGioco_KeyDown;
             this.KeyUp += UserControlGioco_KeyUp;
 
-            //avvia la comunicazione con il server
-            StartServerCommunication();
+           
         }
 
         private void GameTimer_Tick(object sender, EventArgs e)

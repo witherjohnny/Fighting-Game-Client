@@ -48,10 +48,18 @@ namespace FightingGameClient.UserControls
             //gestione thread
             Task t = Task.Factory.StartNew(() =>
             {
-                dataReceived = udpClient.Receive(ref riceveEP);
+                try
+                {
+                    dataReceived = udpClient.Receive(ref riceveEP);
+                }catch(Exception ex) {
+                    MessageBox.Show("Errore :" + ex.ToString());
+                }
             });
             await t;
 
+            if(dataReceived == null)
+                return;
+            
             String risposta = Encoding.ASCII.GetString(dataReceived);
 
             //gestisce la risposta del server
@@ -81,7 +89,7 @@ namespace FightingGameClient.UserControls
         {
             if (PlayClicked != null)
             {
-                PlayClicked.Invoke(this, EventArgs.Empty);
+                PlayClicked?.Invoke(this, EventArgs.Empty);
             }
         }
 

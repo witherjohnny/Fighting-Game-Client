@@ -19,55 +19,24 @@ namespace FightingGameClient.UserControls
     {
         public event Action<string> PlayClicked; // Usa un Action con un parametro stringa
 
-        private CharacterAnimation animationControl;
-
         protected virtual void OnPlayClicked(string personaggio)
         {
             if (PlayClicked != null)
             {
-                PlayClicked.Invoke(personaggio);
+                PlayClicked?.Invoke(personaggio);
             }
         }
-
 
         public UserControlSelezionePersonaggio()
         {
             InitializeComponent();
 
-            // Inizializza il controllo per l'animazione
-            animationControl = new CharacterAnimation();
-            animationControl.Location = new Point(300, 100); // Posizione personalizzata
-            animationControl.Size = new Size(128, 128); // Dimensione personalizzata
-            animationControl.Visible = false; // Nascondi inizialmente
-            Controls.Add(animationControl);
-        }
-
-        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-
-
-        private void UserControlSelezionePersonaggio_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void pictureBoxStickman_Click(object sender, EventArgs e)
-        {
-
-        }
-
-
-        private void pictureBoxVisualizzaPersonaggio_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
+           // // Inizializza il controllo per l'animazione
+           //animationControl = new CharacterAnimation();
+           // animationControl.Location = new Point(300, 100); // Posizione personalizzata
+           // animationControl.Size = new Size(128, 128); // Dimensione personalizzata
+           // animationControl.Visible = false; // Nascondi inizialmente
+           // Controls.Add(animationControl);
         }
 
         private void pictureBoxWarrior_2_Click(object sender, EventArgs e)
@@ -81,25 +50,22 @@ namespace FightingGameClient.UserControls
                 labelNomeGiocatoreSelezionato.Text = nomePersonaggio;
 
                 //configura il percorso delle animazioni
-                string spriteFolderPath = Path.Combine("Sprites", nomePersonaggio, "Idle");
+                string spriteFolderPath = "Sprites/"+ nomePersonaggio+ "/Idle";
 
                 //ANIMAZIONE IDLE 
-                /*
                 try
                 {
                     // rimuovi eventuali controlli esistenti nel TableLayoutPanel
-                    tableLayoutPanelVisualizzaPersonaggio.Controls.Clear();
+                    PanelPersonaggio.Controls.Clear();
 
-                    //crea una nuova istanza del controllo CharacterAnimation
-                    CharacterAnimation animationControl = new CharacterAnimation();
+                    CharacterAnimation animationControl = new CharacterAnimation(nomePersonaggio);
 
                     //configura il controllo per caricare i frame e avviare l'animazione
                     animationControl.LoadFrames(spriteFolderPath);
                     animationControl.Visible = true;
                     animationControl.StartAnimation();
 
-                    //aggiungi il controllo al TableLayoutPanel
-                    tableLayoutPanelVisualizzaPersonaggio.Controls.Add(animationControl, 0, 0); // Riga 0, Colonna 0
+                    PanelPersonaggio.Controls.Add(animationControl);
 
                     //abilita il pulsante "Play"
                     buttonPlay.Enabled = true;
@@ -107,7 +73,7 @@ namespace FightingGameClient.UserControls
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Errore nel caricamento delle animazioni: {ex.Message}", "Errore");
-                }*/
+                }
                 //abilita il pulsante "Play"
                 buttonPlay.Enabled = true;
             }
@@ -132,30 +98,29 @@ namespace FightingGameClient.UserControls
                 string spriteFolderPath = Path.Combine("Sprites", nomePersonaggio, "Idle");
 
                 //ANIMAZIONE IDLE 
-                /*
                 try
                 {
-                    // rimuovi eventuali controlli esistenti nel TableLayoutPanel
-                    tableLayoutPanelVisualizzaPersonaggio.Controls.Clear();
+                    // rimuovi eventuali controlli esistenti nel panel
+                    PanelPersonaggio.Controls.Clear();
 
                     //crea una nuova istanza del controllo CharacterAnimation
-                    CharacterAnimation animationControl = new CharacterAnimation();
+                    CharacterAnimation animationControl = new CharacterAnimation(nomePersonaggio);
 
                     //configura il controllo per caricare i frame e avviare l'animazione
                     animationControl.LoadFrames(spriteFolderPath);
                     animationControl.Visible = true;
                     animationControl.StartAnimation();
 
-                    //aggiungi il controllo al TableLayoutPanel
-                    tableLayoutPanelVisualizzaPersonaggio.Controls.Add(animationControl, 0, 0); // Riga 0, Colonna 0
+                    //aggiungi il controllo al panel
+                    PanelPersonaggio.Controls.Add(animationControl); 
 
-                    //sbilita il pulsante "Play"
+                    //abilita il pulsante "Play"
                     buttonPlay.Enabled = true;
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Errore nel caricamento delle animazioni: {ex.Message}", "Errore");
-                }*/
+                }
                 //abilita il pulsante "Play"
                 buttonPlay.Enabled = true;
             }
@@ -203,12 +168,19 @@ namespace FightingGameClient.UserControls
             //gestione thread
             Task t = Task.Factory.StartNew(() =>
             {
-                dataReceived = udpClient.Receive(ref riceveEP);
+                try
+                {
+                    dataReceived = udpClient.Receive(ref riceveEP);
+                }catch(Exception ex)
+                {
+                    MessageBox.Show("Errore :"+ex.ToString());
+                }
             });
             await t;
 
+            if (dataReceived == null)
+                return;
             String risposta = Encoding.ASCII.GetString(dataReceived);
-
 
 
             //gestisce la risposta del server

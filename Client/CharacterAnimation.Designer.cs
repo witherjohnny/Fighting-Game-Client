@@ -32,8 +32,13 @@
             // 
             // CharacterAnimation
             // 
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BackColor = System.Drawing.Color.Transparent;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.DoubleBuffered = true;
             this.Name = "CharacterAnimation";
             this.Size = new System.Drawing.Size(324, 336);
+            this.Load += new System.EventHandler(this.CharacterAnimation_Load);
             this.ResumeLayout(false);
 
         }
