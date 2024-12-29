@@ -64,13 +64,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Animation.cs" />
+    <Compile Include="Data\Character.cs" />
     <Compile Include="CharacterAnimation.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="CharacterAnimation.Designer.cs">
       <DependentUpon>CharacterAnimation.cs</DependentUpon>
     </Compile>
+    <Compile Include="Data\CharactersData.cs" />
+    <Compile Include="Enums\Action.cs" />
+    <Compile Include="Enums\Direction.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,7 +83,7 @@
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UdpClientSingleton.cs" />
+    <Compile Include="Data\UdpClientSingleton.cs" />
     <Compile Include="UserControls\UserControlGioco.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -124,6 +127,9 @@
     <EmbeddedResource Include="UserControls\UserControlSelezionePersonaggio.resx">
       <DependentUpon>UserControlSelezionePersonaggio.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="CharacterSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -142,38 +148,12 @@
     <Folder Include="Images\Players\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Images\BackGround\sfondoInizio.jpg" />
-    <Content Include="Images\BackGround\sfondoSceltaGiocatori.png" />
-    <Content Include="Images\Sprites\warrior1\Attack_1.png" />
-    <Content Include="Images\Sprites\warrior1\Attack_2.png" />
-    <Content Include="Images\Sprites\warrior1\Attack_3.png" />
-    <Content Include="Images\Sprites\warrior1\Dead.png" />
-    <Content Include="Images\Sprites\warrior1\Hurt.png" />
-    <Content Include="Images\Sprites\warrior1\Idle.png" />
-    <Content Include="Images\Sprites\warrior1\Jump.png" />
-    <Content Include="Images\Sprites\warrior1\Run+Attack.png" />
-    <Content Include="Images\Sprites\warrior1\Run.png" />
-    <Content Include="Images\Sprites\warrior1\Walk.png" />
-    <Content Include="Images\Sprites\warrior2\Attack_1.png" />
-    <Content Include="Images\Sprites\warrior2\Attack_2.png" />
-    <Content Include="Images\Sprites\warrior2\Dead.png" />
-    <Content Include="Images\Sprites\warrior2\Hurt.png" />
-    <Content Include="Images\Sprites\warrior2\Idle.png" />
-    <Content Include="Images\Sprites\warrior2\Jump.png" />
-    <Content Include="Images\Sprites\warrior2\Protect.png" />
-    <Content Include="Images\Sprites\warrior2\Run+Attack.png" />
-    <Content Include="Images\Sprites\warrior2\Run.png" />
-    <Content Include="Images\Sprites\warrior2\Walk.png" />
-    <Content Include="Images\Sprites\warrior3\Attack_1.png" />
-    <Content Include="Images\Sprites\warrior3\Attack_2.png" />
-    <Content Include="Images\Sprites\warrior3\Dead.png" />
-    <Content Include="Images\Sprites\warrior3\Hurt.png" />
-    <Content Include="Images\Sprites\warrior3\Idle.png" />
-    <Content Include="Images\Sprites\warrior3\Jump.png" />
-    <Content Include="Images\Sprites\warrior3\Protect.png" />
-    <Content Include="Images\Sprites\warrior3\Run+Attack.png" />
-    <Content Include="Images\Sprites\warrior3\Run.png" />
-    <Content Include="Images\Sprites\warrior3\Walk.png" />
+    <Content Include="Images\BackGround\sfondoInizio.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\BackGround\sfondoSceltaGiocatori.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Sprites\FireWizard\AreaAttack\tile000.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

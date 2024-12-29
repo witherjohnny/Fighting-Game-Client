@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using FightingGameClient.Enums;
 
 namespace FightingGameClient.UserControls
 {
@@ -21,12 +22,14 @@ namespace FightingGameClient.UserControls
 
         private const int FrameRate = 60; //frame al secondo (FPS)
 
-        private UdpClient client;
+        private UdpClient client = UdpClientSingleton.Instance;
 
         //costruttore del controllo
         public UserControlGioco(string personaggio)
         {
             InitializeComponent();
+            this.personaggio = personaggio;
+
             InitializeGame();
             //avvia la comunicazione con il server
             StartServerCommunication();
@@ -34,9 +37,7 @@ namespace FightingGameClient.UserControls
             disegnaBackground();
             disegnaPavimento();
 
-            this.personaggio = personaggio;
             label1.Text = $"Personaggio selezionato: {personaggio}";
-            client = UdpClientSingleton.Instance;
         }
         private void disegnaBackground()
         {
@@ -112,8 +113,10 @@ namespace FightingGameClient.UserControls
 
             //inizializza i player
             playerLocal = new Player(personaggio, 100, 300); // personaggio locale
-            //playerRemote = new Player("warrior2", 500, 300); // personaggio remoto
+            playerRemote = new Player("Warrior_2", 500, 300); // personaggio remoto
 
+            playerLocal.drawOnPanel(this.CanvasPanel);
+            playerRemote.drawOnPanel(this.CanvasPanel);
             //inizializza il timer del gioco
             System.Windows.Forms.Timer gameTimer = new System.Windows.Forms.Timer();
             gameTimer.Interval = 1000 / FrameRate; //intervallo in millisecondi
@@ -130,43 +133,13 @@ namespace FightingGameClient.UserControls
         private void GameTimer_Tick(object sender, EventArgs e)
         {
             //aggiorna lo stato dei player
-            playerLocal.Update();
-            playerRemote.Update();
+            //playerLocal.Update();
+            //playerRemote.Update();
 
             //aggiorna il disegno
-            this.Invalidate(); //chiama OnPaint
+            //this.Invalidate(); //chiama OnPaint
         }
 
-        //disegna i giocatori sul pannello canvas
-        private void CanvasPanel_Paint(object sender, PaintEventArgs e)
-        {
-            //ottieni l'oggetto Graphics per disegnare
-            Graphics g = e.Graphics;
-
-            //disegna lo sfondo del gioco
-            //g.Clear(Color.Black); // Sfondo nero
-
-            //disegna il player locale
-            playerLocal.Draw(g);
-
-            //disegna il player remoto (dati dal server)
-            playerRemote.Draw(g);
-
-            //altri elementi grafici, come effetti, punteggi, ecc.
-
-        }
-
-
-        //metodo per ridisegnare il controllo
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-            Graphics g = e.Graphics;
-
-            //disegna entrambi i player
-            playerLocal.Draw(g);
-            playerRemote.Draw(g);
-        }
 
         //gestione del movimento con tastiera
         private void UserControlGioco_KeyDown(object sender, KeyEventArgs e)
@@ -174,16 +147,16 @@ namespace FightingGameClient.UserControls
             if (e.KeyCode == Keys.Left)
             {
                 playerLocal.X -= playerLocal.Speed;
-                playerLocal.ChangeAnimation(Action.Run);
+                playerLocal.setAnimation("Run");
             }
             else if (e.KeyCode == Keys.Right)
             {
                 playerLocal.X += playerLocal.Speed;
-                playerLocal.ChangeAnimation(Action.Run);
+                playerLocal.setAnimation("Run");
             }
             else if (e.KeyCode == Keys.Space)
             {
-                playerLocal.ChangeAnimation(Action.Attack);
+                playerLocal.setAnimation("Run");
             }
         }
 
@@ -192,7 +165,7 @@ namespace FightingGameClient.UserControls
         {
             if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right || e.KeyCode == Keys.Space)
             {
-                playerLocal.ChangeAnimation(Action.Idle);
+                playerLocal.setAnimation("Idle");
             }
         }
         private async void StartServerCommunication()

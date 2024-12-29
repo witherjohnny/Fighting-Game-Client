@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using FightingGameClient.Data;
 namespace FightingGameClient
 {
     internal static class Program
@@ -16,6 +16,8 @@ namespace FightingGameClient
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            CharactersData.LoadCharacters("CharacterSettings.json");
             Application.Run(new MainForm());
         }
     }

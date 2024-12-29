@@ -18,7 +18,7 @@ namespace FightingGameClient.UserControls
     public partial class UserControlSelezionePersonaggio : UserControl
     {
         public event Action<string> PlayClicked; // Usa un Action con un parametro stringa
-
+        private string personaggioScelto = null;
         protected virtual void OnPlayClicked(string personaggio)
         {
             if (PlayClicked != null)
@@ -30,13 +30,32 @@ namespace FightingGameClient.UserControls
         public UserControlSelezionePersonaggio()
         {
             InitializeComponent();
+        }
+        private void loadSelected(String nomePersonaggio)
+        {
+            //configura il percorso delle animazioni
+            string spriteFolderPath = "Sprites/" + nomePersonaggio + "/Idle";
 
-           // // Inizializza il controllo per l'animazione
-           //animationControl = new CharacterAnimation();
-           // animationControl.Location = new Point(300, 100); // Posizione personalizzata
-           // animationControl.Size = new Size(128, 128); // Dimensione personalizzata
-           // animationControl.Visible = false; // Nascondi inizialmente
-           // Controls.Add(animationControl);
+            //ANIMAZIONE IDLE 
+            try
+            {
+                // rimuovi eventuali controlli esistenti nel TableLayoutPanel
+                PanelPersonaggio.Controls.Clear();
+
+                CharacterAnimation animationControl = new CharacterAnimation(nomePersonaggio, PanelPersonaggio.Width, PanelPersonaggio.Height);
+
+                //configura il controllo per caricare i frame e avviare l'animazione
+                animationControl.LoadFrames(spriteFolderPath);
+                animationControl.Visible = true;
+                animationControl.StartAnimation();
+                personaggioScelto = nomePersonaggio;
+                PanelPersonaggio.Controls.Add(animationControl);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore nel caricamento delle animazioni: {ex.Message}", "Errore");
+            }
+            
         }
 
         private void pictureBoxWarrior_2_Click(object sender, EventArgs e)
@@ -47,41 +66,18 @@ namespace FightingGameClient.UserControls
                 string nomePersonaggio = pictureBoxWarrior_2.AccessibleDescription;
 
                 //aggiorna il nome del personaggio selezionato
-                labelNomeGiocatoreSelezionato.Text = nomePersonaggio;
-
-                //configura il percorso delle animazioni
-                string spriteFolderPath = "Sprites/"+ nomePersonaggio+ "/Idle";
-
-                //ANIMAZIONE IDLE 
-                try
-                {
-                    // rimuovi eventuali controlli esistenti nel TableLayoutPanel
-                    PanelPersonaggio.Controls.Clear();
-
-                    CharacterAnimation animationControl = new CharacterAnimation(nomePersonaggio);
-
-                    //configura il controllo per caricare i frame e avviare l'animazione
-                    animationControl.LoadFrames(spriteFolderPath);
-                    animationControl.Visible = true;
-                    animationControl.StartAnimation();
-
-                    PanelPersonaggio.Controls.Add(animationControl);
-
-                    //abilita il pulsante "Play"
-                    buttonPlay.Enabled = true;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Errore nel caricamento delle animazioni: {ex.Message}", "Errore");
-                }
+                labelNomeGiocatoreSelezionato.Text = "Warrior";
+                loadSelected(nomePersonaggio);
                 //abilita il pulsante "Play"
                 buttonPlay.Enabled = true;
+
             }
             else
             {
                 MessageBox.Show("L'immagine non è stata caricata correttamente.", "Errore");
             }
-        }
+
+}
 
 
         private void pictureBoxWizard_Click(object sender, EventArgs e)
@@ -92,35 +88,9 @@ namespace FightingGameClient.UserControls
                 string nomePersonaggio = pictureBoxFireWizard.AccessibleDescription;
 
                 //aggiorna il nome del personaggio selezionato
-                labelNomeGiocatoreSelezionato.Text = nomePersonaggio;
+                labelNomeGiocatoreSelezionato.Text = "Fire Wizard";
 
-                //configura il percorso delle animazioni
-                string spriteFolderPath = Path.Combine("Sprites", nomePersonaggio, "Idle");
-
-                //ANIMAZIONE IDLE 
-                try
-                {
-                    // rimuovi eventuali controlli esistenti nel panel
-                    PanelPersonaggio.Controls.Clear();
-
-                    //crea una nuova istanza del controllo CharacterAnimation
-                    CharacterAnimation animationControl = new CharacterAnimation(nomePersonaggio);
-
-                    //configura il controllo per caricare i frame e avviare l'animazione
-                    animationControl.LoadFrames(spriteFolderPath);
-                    animationControl.Visible = true;
-                    animationControl.StartAnimation();
-
-                    //aggiungi il controllo al panel
-                    PanelPersonaggio.Controls.Add(animationControl); 
-
-                    //abilita il pulsante "Play"
-                    buttonPlay.Enabled = true;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Errore nel caricamento delle animazioni: {ex.Message}", "Errore");
-                }
+                loadSelected(nomePersonaggio);
                 //abilita il pulsante "Play"
                 buttonPlay.Enabled = true;
             }
@@ -130,16 +100,10 @@ namespace FightingGameClient.UserControls
             }
         }
 
-
-        private void tableLayoutPanel1_Paint_1(object sender, PaintEventArgs e)
-        {
-
-        }
-
         private async void buttonPlay_Click(object sender, EventArgs e)
         {
             //vuol dire che il personaggio è stato confermato, si comunica al server il personaggio selezionato+
-            String personaggio = labelNomeGiocatoreSelezionato.Text;
+            String personaggio = personaggioScelto;
             String messaggio = "ready;" + personaggio;
 
             //lo manda al server

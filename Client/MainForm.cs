@@ -67,10 +67,5 @@ namespace FightingGameClient
             base.OnFormClosing(e);
         }
 
-
-        private void panelContainer_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
     }
 }

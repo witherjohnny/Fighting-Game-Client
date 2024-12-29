@@ -5,6 +5,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Xml;
+using FightingGameClient.Data;
 
 namespace FightingGameClient
 {
@@ -13,22 +15,24 @@ namespace FightingGameClient
         private Timer animationTimer;
         private List<Image> frames = new List<Image>(); //array per memorizzare i frame dell'animazione
         private int currentFrame;
-        private int totalFrames;
-        private String personaggio;
-
-        public CharacterAnimation(String personaggio)
+        private string personaggio;
+        private string currentAnimation;
+        
+        public CharacterAnimation(string personaggio, int width, int height)
         {
             InitializeComponent();
             this.personaggio = personaggio;
-            this.Dock = DockStyle.Fill;
-        }
+            this.currentFrame= 0;
+            this.Size= new Size(width, height);
+            this.currentAnimation = "Idle";
 
+        }
         private void CharacterAnimation_Load(object sender, EventArgs e)
         {
             try
             {
                 //carica i frame dalla cartella Idle come esempio predefinito
-                LoadFrames("Sprites/"+this.personaggio+"/Idle");
+                LoadFrames($"Sprites/{this.personaggio}/{this.currentAnimation}");
             }
             catch (Exception ex)
             {
@@ -41,35 +45,44 @@ namespace FightingGameClient
             animationTimer.Tick += OnAnimationTick;
             animationTimer.Start();
         }
-
+        public void setAnimation(String animation)
+        {
+            if(animationExists(animation))
+            {
+                this.currentAnimation = animation;
+                LoadFrames($"Sprites/{this.personaggio}/{this.currentAnimation}");
+            }
+        }
+        public void setPosition(int x, int y)
+        {
+            this.Location = new Point(x, y);
+        }
         private void OnAnimationTick(object sender, EventArgs e)
         {
-            currentFrame = (currentFrame + 1) % totalFrames;
+            this.currentFrame = (this.currentFrame + 1) % frames.Count;
             this.BackgroundImage = frames[currentFrame];
         }
         public void LoadFrames(string spriteFolderPath)
         {
             try
             {
-                //recupera tutti i file PNG nella cartella specificata
-                string[] files = Directory.GetFiles(spriteFolderPath, "*.png").ToArray();
+                frames.Clear();
 
-                if (files.Length == 0)
+                //recupera tutti i file PNG nella cartella specificata
+                string[] percorsoFrames = Directory.GetFiles(spriteFolderPath, "*.png").ToArray();
+                Array.Sort(percorsoFrames);
+                if (percorsoFrames.Length == 0)
                 {
                     throw new Exception("Nessun frame trovato nella cartella specificata.");
                 }
 
                 //carica i file come immagini
-                foreach (string immagine in files)
+                foreach (string percorsoImmagine in percorsoFrames)
                 {
-                    frames.Add(Image.FromFile(immagine)) ;
-                    totalFrames = frames.Count;
+                    frames.Add(Image.FromFile(percorsoImmagine)) ;
                 }
-
                 //reimposta l'animazione al primo frame
                 currentFrame = 0;
-
-                this.Invalidate(); //forza il ridisegno
             }
             catch (Exception ex)
             {
@@ -92,7 +105,28 @@ namespace FightingGameClient
                 animationTimer.Stop();
             }
         }
-
+        public bool animationExists(string animationName)
+        {
+            if(this.personaggio != null)
+            {
+                Character character = CharactersData.Characters.Find(c => c.Name == this.personaggio);
+                foreach(string action in character.BaseActions)
+                {
+                    if(action == animationName)
+                    {
+                        return true;
+                    }
+                }
+                foreach (string action in character.Attacks)
+                {
+                    if (action == animationName)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
        
     }
 }
