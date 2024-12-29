@@ -10,6 +10,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using FightingGameClient.Data;
 
 namespace FightingGameClient
 {
@@ -61,11 +62,16 @@ namespace FightingGameClient
             panelContainer.Controls.Clear();
             panelContainer.Controls.Add(gioco);
         }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            base.OnFormClosing(e);
-        }
+            string serverAddress = ServerSettings.Ip; 
+            int serverPort = (int)ServerSettings.Port;
+            UdpClient udpClient = UdpClientSingleton.Instance;
 
+            String messaggio = "leave";
+            byte[] data = Encoding.ASCII.GetBytes(messaggio);
+
+            udpClient.Send(data, data.Length, serverAddress, serverPort);
+        }
     }
 }

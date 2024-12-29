@@ -227,7 +227,7 @@ namespace FightingGameClient.UserControls
                 {
                     string message = $"1;{playerLocal.X};{playerLocal.Y};{personaggio}";
                     byte[] data = Encoding.ASCII.GetBytes(message);
-                    client.Send(data, data.Length, "127.0.0.1", 12345);
+                    client.Send(data, data.Length, ServerSettings.Ip, (int)ServerSettings.Port);
                 }
             }
             catch (Exception ex)

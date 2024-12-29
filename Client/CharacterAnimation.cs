@@ -47,7 +47,7 @@ namespace FightingGameClient
         }
         public void setAnimation(String animation)
         {
-            if(animationExists(animation))
+            if(CharactersData.animationExists(this.personaggio,animation))
             {
                 this.currentAnimation = animation;
                 LoadFrames($"Sprites/{this.personaggio}/{this.currentAnimation}");
@@ -105,28 +105,7 @@ namespace FightingGameClient
                 animationTimer.Stop();
             }
         }
-        public bool animationExists(string animationName)
-        {
-            if(this.personaggio != null)
-            {
-                Character character = CharactersData.Characters.Find(c => c.Name == this.personaggio);
-                foreach(string action in character.BaseActions)
-                {
-                    if(action == animationName)
-                    {
-                        return true;
-                    }
-                }
-                foreach (string action in character.Attacks)
-                {
-                    if (action == animationName)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
+        
        
     }
 }

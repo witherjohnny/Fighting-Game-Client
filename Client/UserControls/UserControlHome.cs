@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using FightingGameClient.Data;
 
 namespace FightingGameClient.UserControls
 {
@@ -25,8 +26,8 @@ namespace FightingGameClient.UserControls
         }
         private async void buttonPlay_Click(object sender, EventArgs e)
         {
-            string serverAddress = "127.0.0.1"; //IP del server
-            int serverPort = 12345; //porta del server
+            string serverAddress = ServerSettings.Ip; //IP del server
+            int serverPort = (int)ServerSettings.Port; //porta del server
 
             //scrittura
             //usa UdpClient per la comunicazione

@@ -18,6 +18,11 @@ namespace FightingGameClient
             Application.SetCompatibleTextRenderingDefault(false);
 
             CharactersData.LoadCharacters("CharacterSettings.json");
+            ServerSettings.JsonLoadSettings("serverSettings.json");
+            if (CharactersData.Characters == null)
+                throw new InvalidOperationException("Characters data is not loaded. Please ensure the JSON file is correctly loaded.");
+            if (ServerSettings.Ip == null || ServerSettings.Port == null)
+                throw new InvalidOperationException("Sever data is not loaded. Please ensure the JSON file is correctly loaded.");
             Application.Run(new MainForm());
         }
     }

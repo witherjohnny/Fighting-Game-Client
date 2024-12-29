@@ -72,7 +72,7 @@
       <DependentUpon>CharacterAnimation.cs</DependentUpon>
     </Compile>
     <Compile Include="Data\CharactersData.cs" />
-    <Compile Include="Enums\Action.cs" />
+    <Compile Include="Data\ServerSettings.cs" />
     <Compile Include="Enums\Direction.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -140,6 +140,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="serverSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

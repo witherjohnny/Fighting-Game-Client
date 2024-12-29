@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FightingGameClient.Data;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -107,8 +108,8 @@ namespace FightingGameClient.UserControls
             String messaggio = "ready;" + personaggio;
 
             //lo manda al server
-            string serverAddress = "127.0.0.1"; //IP del server
-            int serverPort = 12345; //porta del server
+            string serverAddress = ServerSettings.Ip; //IP del server
+            int serverPort = (int)ServerSettings.Port; //porta del server
 
             //scrittura
             //usa UdpClient per la comunicazione
@@ -145,7 +146,6 @@ namespace FightingGameClient.UserControls
             if (dataReceived == null)
                 return;
             String risposta = Encoding.ASCII.GetString(dataReceived);
-
 
             //gestisce la risposta del server
             if (risposta == "Gioco iniziato")
