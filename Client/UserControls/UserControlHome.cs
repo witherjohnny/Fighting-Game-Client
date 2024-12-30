@@ -23,7 +23,42 @@ namespace FightingGameClient.UserControls
         public UserControlHome()
         {
             InitializeComponent();
+            stilePulsantePlayIniziale();
         }
+        private void stilePulsantePlayIniziale()
+        {
+            // imposta il testo
+            buttonPlay.Text = "PLAY";
+            buttonPlay.Font = new Font("Times New Roman", 20, FontStyle.Bold); 
+            buttonPlay.ForeColor = Color.White; // testo bianco
+            buttonPlay.BackColor = Color.LightBlue; // sfondo azzurro
+            buttonPlay.FlatStyle = FlatStyle.Flat; // stile piatto
+            buttonPlay.FlatAppearance.BorderSize = 0; // senza bordo
+
+            // bordi arrotondati
+            System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath();
+            path.AddArc(10, 10, 30, 30, 180, 90); // angolo superiore sinistro
+            path.AddArc(buttonPlay.Width - 40, 10, 30, 30, 270, 90); // angolo superiore destro
+            path.AddArc(buttonPlay.Width - 40, buttonPlay.Height - 40, 30, 30, 0, 90); // angolo inferiore destro
+            path.AddArc(10, buttonPlay.Height - 40, 30, 30, 90, 90); // angolo inferiore sinistro
+            path.CloseAllFigures();
+            buttonPlay.Region = new Region(path);
+
+            // aggiungi un'ombra per dare profondità
+            buttonPlay.FlatAppearance.MouseOverBackColor = Color.Blue; // cambia colore al passaggio del mouse
+
+            // evento hover per un bordo bianco
+            buttonPlay.MouseEnter += (s, e) =>
+            {
+                buttonPlay.FlatAppearance.BorderSize = 2;
+                buttonPlay.FlatAppearance.BorderColor = Color.White; // bordo bianco
+            };
+            buttonPlay.MouseLeave += (s, e) =>
+            {
+                buttonPlay.FlatAppearance.BorderSize = 0; // rimuove il bordo
+            };
+        }
+
         private async void buttonPlay_Click(object sender, EventArgs e)
         {
             string serverAddress = ServerSettings.Ip; //IP del server

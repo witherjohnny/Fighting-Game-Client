@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -31,8 +32,64 @@ namespace FightingGameClient.UserControls
         public UserControlSelezionePersonaggio()
         {
             InitializeComponent();
-            
+            stileLabelSelezionePersonaggio();
+            stileLabelNomeGiocatoreSelezionato();
+            stileLabelNomeGiocatoreSelezionato();
+            stileButtonPlay();
         }
+
+        private void stileLabelSelezionePersonaggio()
+        {
+            //configura il testo
+            label1.Text = "Selezione Personaggio";
+            label1.Font = new Font("Arial", 24, FontStyle.Bold); //font grande e in grassetto
+            label1.ForeColor = Color.White; //testo bianco
+            label1.BackColor = Color.Transparent; //sfondo trasparente
+            label1.TextAlign = ContentAlignment.MiddleCenter; //centra il testo
+
+            //configura dimensioni e posizione
+            label1.AutoSize = false; //imposta larghezza e altezza manualmente
+            label1.Width = 400;
+            label1.Height = 60;
+            label1.Location = new Point((this.Width - label1.Width) / 2, 20); //centra orizzontalmente
+        }
+        private void stileLabelNomeGiocatoreSelezionato()
+        {
+            // imposta il testo di default
+            labelNomeGiocatoreSelezionato.Text = "Nome Giocatore";
+            labelNomeGiocatoreSelezionato.Font = new Font("Arial", 18, FontStyle.Bold); // font più piccolo rispetto alla selezione personaggio
+            labelNomeGiocatoreSelezionato.ForeColor = Color.White; // testo bianco
+            labelNomeGiocatoreSelezionato.BackColor = Color.Transparent; // sfondo trasparente
+            labelNomeGiocatoreSelezionato.TextAlign = ContentAlignment.MiddleCenter; // centra il testo
+        }
+
+        private void stileButtonPlay()
+        {
+            // imposta il testo
+            buttonPlay.Text = "PLAY";
+            buttonPlay.Font = new Font("Arial", 18, FontStyle.Bold); // font grande e in grassetto
+            buttonPlay.ForeColor = Color.White; // testo bianco
+            buttonPlay.BackColor = Color.Red; // colore di sfondo rosso
+            buttonPlay.FlatStyle = FlatStyle.Flat; // stile piatto
+            buttonPlay.FlatAppearance.BorderSize = 0; // senza bordo
+
+            // bordi leggermente arrotondati
+            buttonPlay.Region = new Region(new Rectangle(0, 0, buttonPlay.Width, buttonPlay.Height));
+            System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath();
+            path.AddArc(5, 5, 15, 15, 180, 90); // angolo superiore sinistro
+            path.AddArc(buttonPlay.Width - 20, 5, 15, 15, 270, 90); // angolo superiore destro
+            path.AddArc(buttonPlay.Width - 20, buttonPlay.Height - 20, 15, 15, 0, 90); // angolo inferiore destro
+            path.AddArc(5, buttonPlay.Height - 20, 15, 15, 90, 90); // angolo inferiore sinistro
+            path.CloseAllFigures();
+            buttonPlay.Region = new Region(path);
+
+            // evento click per avviare il gioco
+            buttonPlay.Click += (s, e) =>
+            {
+                MessageBox.Show("Personaggio selezionato con successo!"); 
+            };
+        }
+
         private void loadSelected(String nomePersonaggio)
         {
             //configura il percorso delle animazioni
@@ -72,7 +129,8 @@ namespace FightingGameClient.UserControls
                 loadSelected(nomePersonaggio);
                 //abilita il pulsante "Play"
                 buttonPlay.Enabled = true;
-
+                buttonPlay.ForeColor = Color.White; // testo bianco
+                buttonPlay.BackColor = Color.Green; // colore di sfondo verde
             }
             else
             {
@@ -95,6 +153,8 @@ namespace FightingGameClient.UserControls
                 loadSelected(nomePersonaggio);
                 //abilita il pulsante "Play"
                 buttonPlay.Enabled = true;
+                buttonPlay.ForeColor = Color.White; // testo bianco
+                buttonPlay.BackColor = Color.Green; // colore di sfondo verde
             }
             else
             {

@@ -24,6 +24,8 @@ namespace FightingGameClient.UserControls
 
         private UdpClient client = UdpClientSingleton.Instance;
 
+
+
         //costruttore del controllo
         public UserControlGioco(string personaggio)
         {
@@ -34,11 +36,31 @@ namespace FightingGameClient.UserControls
             //avvia la comunicazione con il server
             StartServerCommunication();
 
+            //grafica
+            stileLabels();
+
+            //es rosso poca vita, verde tanta vita
+            //stileProgressBars();
+
             disegnaBackground();
             disegnaPavimento();
 
             label1.Text = $"Personaggio selezionato: {personaggio}";
         }
+
+        private void stileLabels()
+        {
+            label1.Font = new Font("Arial", 14, FontStyle.Bold);
+            label1.ForeColor = Color.White;
+            label1.BackColor = Color.Transparent; //trasparente per mostrare sfondo del gioco
+            label1.TextAlign = ContentAlignment.MiddleCenter;
+
+            label2.Font = new Font("Arial", 14, FontStyle.Bold);
+            label2.ForeColor = Color.White;
+            label2.BackColor = Color.Transparent; //trasparente per mostrare sfondo del gioco
+            label2.TextAlign = ContentAlignment.MiddleCenter;
+        }
+
         private void disegnaBackground()
         {
             //percorso dell'immagine di sfondo
@@ -81,19 +103,21 @@ namespace FightingGameClient.UserControls
             }
 
             //dimensioni del pavimento
-            int numeroBlocchi = 10; //blocchi pavimento
-            int larghezzaBlocco = this.Width / numeroBlocchi;
-            int altezzaBlocco = 50; //altezza fissa del pavimento
+            int numeroBlocchiTotali = 10; //numero totale di blocchi
+            int numeroBlocchiPavimento = numeroBlocchiTotali - 4; //blocchi effettivi (lasciando 2 vuoti per lato)
+            int larghezzaBlocco = this.Width * 2 / numeroBlocchiTotali;
+            int altezzaBlocco = 100; //altezza fissa del pavimento
             int yPavimento = this.Height - altezzaBlocco; //posizione verticale del pavimento
+            int xInizioPavimento = larghezzaBlocco * 2; //inizio del pavimento (salta 2 blocchi a sinistra)
 
-            for (int i = 0; i < numeroBlocchi; i++)
+            for (int i = 0; i < numeroBlocchiPavimento; i++)
             {
                 Panel blocco = new Panel
                 {
                     Width = larghezzaBlocco,
                     Height = altezzaBlocco,
                     BackColor = Color.Brown, //colore di fallback
-                    Location = new Point(i * larghezzaBlocco, yPavimento),
+                    Location = new Point(xInizioPavimento + (i * larghezzaBlocco), yPavimento),
                     BackgroundImage = Image.FromFile(immaginePavimento),
                     BackgroundImageLayout = ImageLayout.Stretch //adatta l'immagine al blocco
                 };
@@ -102,6 +126,7 @@ namespace FightingGameClient.UserControls
                 this.Controls.Add(blocco);
             }
         }
+
 
 
         //inizializza la UI di gioco
@@ -113,6 +138,7 @@ namespace FightingGameClient.UserControls
 
             //inizializza i player
             playerLocal = new Player(personaggio, 100, 300); // personaggio locale
+            //coordinate e nome date dal server
             playerRemote = new Player("Warrior_2", 500, 300); // personaggio remoto
 
             this.Controls.Add(playerLocal.getCharacterBox());
@@ -127,8 +153,6 @@ namespace FightingGameClient.UserControls
             //gestione eventi della tastiera
             this.KeyDown += UserControlGioco_KeyDown;
             this.KeyUp += UserControlGioco_KeyUp;
-
-           
         }
 
         private void GameTimer_Tick(object sender, EventArgs e)
