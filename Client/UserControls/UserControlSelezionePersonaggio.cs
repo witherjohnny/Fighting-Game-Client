@@ -31,6 +31,7 @@ namespace FightingGameClient.UserControls
         public UserControlSelezionePersonaggio()
         {
             InitializeComponent();
+            
         }
         private void loadSelected(String nomePersonaggio)
         {

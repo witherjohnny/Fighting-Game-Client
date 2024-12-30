@@ -33,18 +33,14 @@ public class Player
         Speed = 5;
 
         characterBox = new CharacterAnimation(characterName, 80, 80);
+        characterBox.setPosition(X, Y);
     }
     public void setAnimation(string animationName)
     {
         characterBox.setAnimation(animationName);
     }
-    public void drawOnPanel(Panel panel)
-    {
-        if (characterBox != null)
-        {
-            panel.Controls.Add(characterBox);
-        }
-    }
+   
+    public CharacterAnimation getCharacterBox() { return this.characterBox; }
     public void MoveLeft()
     {
         //aggiorna la posizione

@@ -57,8 +57,8 @@ namespace FightingGameClient.UserControls
             try
             {
                 //carica l'immagine e imposta lo sfondo
-                CanvasPanel.BackgroundImage = Image.FromFile(immagineSfondo);
-                CanvasPanel.BackgroundImageLayout = ImageLayout.Stretch; //adatta l'immagine al pannello
+                this.BackgroundImage = Image.FromFile(immagineSfondo);
+                this.BackgroundImageLayout = ImageLayout.Stretch; //adatta l'immagine al pannello
             }
             catch (Exception ex)
             {
@@ -115,8 +115,9 @@ namespace FightingGameClient.UserControls
             playerLocal = new Player(personaggio, 100, 300); // personaggio locale
             playerRemote = new Player("Warrior_2", 500, 300); // personaggio remoto
 
-            playerLocal.drawOnPanel(this.CanvasPanel);
-            playerRemote.drawOnPanel(this.CanvasPanel);
+            this.Controls.Add(playerLocal.getCharacterBox());
+            this.Controls.Add(playerRemote.getCharacterBox());
+
             //inizializza il timer del gioco
             System.Windows.Forms.Timer gameTimer = new System.Windows.Forms.Timer();
             gameTimer.Interval = 1000 / FrameRate; //intervallo in millisecondi
