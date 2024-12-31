@@ -151,10 +151,19 @@
     <Folder Include="Images\Players\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\BackGround\sfondoBlur.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\BackGround\sfondoGioco.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Images\BackGround\sfondoInizio.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\BackGround\sfondoSceltaGiocatori.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Floor\pavimento1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Sprites\FireWizard\AreaAttack\tile000.png">
