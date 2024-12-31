@@ -11,8 +11,9 @@ using FightingGameClient.Enums;
 
 namespace FightingGameClient
 {
-    public partial class CharacterAnimation : UserControl
+    public partial class AnimationBox : UserControl
     {
+        //usato sia per il personaggio che per le hitbox che hanno animazioni(ad esempio proiettili)
         private Timer animationTimer;
         private List<Image> frames = new List<Image>(); //array per memorizzare i frame dell'animazione
         private int currentFrame;
@@ -22,25 +23,28 @@ namespace FightingGameClient
         private bool isCancelable; //finche l'animazione corrente non ha finito non puo cambiare animazione
         private Direction direction;
         private static readonly object _lock = new object();
-        public CharacterAnimation(string personaggio, int x, int y, int width, int height, Direction direction)
+        public AnimationBox(string personaggio,string startingAnimation, int x, int y, int width, int height, Direction direction)
         {
             InitializeComponent();
             this.personaggio = personaggio;
             this.currentFrame= 0;
             this.Size= new Size(width, height);
-            this.currentAnimation = "Idle";
+            this.currentAnimation = startingAnimation;
             this.runOnce = false;
             this.isCancelable = true;
             this.direction = direction;
             setPosition(x, y);
-
-            LoadFrames($"Images/Sprites/{this.personaggio}/{this.currentAnimation}");
             //imposta il timer per l'animazione
             animationTimer = new Timer();
             animationTimer.Interval = 100;
             animationTimer.Tick += OnAnimationTick;
-            StartAnimation();
 
+            if (CharactersData.animationExists(personaggio, startingAnimation))
+            {
+                LoadFrames($"Images/Sprites/{this.personaggio}/{this.currentAnimation}");
+                
+                StartAnimation();
+            }
         }
         private void OnAnimationTick(object sender, EventArgs e)
         {

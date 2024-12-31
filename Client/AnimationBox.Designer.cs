@@ -1,6 +1,6 @@
 ﻿namespace FightingGameClient
 {
-    partial class CharacterAnimation
+    partial class AnimationBox
     {
         /// <summary> 
         /// Variabile di progettazione necessaria.

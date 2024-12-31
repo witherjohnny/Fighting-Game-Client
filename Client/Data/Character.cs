@@ -9,7 +9,8 @@ namespace FightingGameClient
     internal class Character
     {
         public string Name { get; set; }
-        public List<string> BaseActions { get; set; }
-        public List<string> Attacks { get; set; }
+        public List<string> BaseActions { get; set; } = new List<string>();
+        public List<string> Attacks { get; set; } = new List<string>();
+        public List<string> Projectiles { get; set; } = new List<string>();
     }
 }

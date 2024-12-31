@@ -15,7 +15,7 @@ public class Player
     private int jumpHeight = 50;
     public string nome { get; set; }
 
-    private CharacterAnimation characterBox;
+    private AnimationBox characterBox;
     private Direction currentDirection; // direzione corrente
 
     public Player()
@@ -31,7 +31,7 @@ public class Player
         Y = startY;
         Speed = 5;
 
-        characterBox = new CharacterAnimation(characterName, X, Y, 128, 128, direction);
+        characterBox = new AnimationBox(characterName,"Idle", X, Y, 128, 128, direction);
 
     }
     public void setAnimation(string animationName,Direction direction, bool runOnce, bool isCancelable)
@@ -39,7 +39,7 @@ public class Player
         characterBox.setAnimation(animationName, direction, runOnce,isCancelable);
     }
    
-    public CharacterAnimation getCharacterBox() { return this.characterBox; }
+    public AnimationBox getCharacterBox() { return this.characterBox; }
     public void MoveLeft()
     {
         //aggiorna la posizione

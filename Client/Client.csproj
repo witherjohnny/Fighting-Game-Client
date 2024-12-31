@@ -64,16 +64,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttackHitBox.cs" />
     <Compile Include="Data\Character.cs" />
-    <Compile Include="CharacterAnimation.cs">
+    <Compile Include="AnimationBox.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="CharacterAnimation.Designer.cs">
-      <DependentUpon>CharacterAnimation.cs</DependentUpon>
+    <Compile Include="AnimationBox.Designer.cs">
+      <DependentUpon>AnimationBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Data\CharactersData.cs" />
     <Compile Include="Data\ServerSettings.cs" />
     <Compile Include="Enums\Direction.cs" />
+    <Compile Include="HitBox.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -81,6 +83,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Player.cs" />
+    <Compile Include="PlayerHitBox.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data\UdpClientSingleton.cs" />
@@ -102,8 +105,8 @@
     <Compile Include="UserControls\UserControlSelezionePersonaggio.Designer.cs">
       <DependentUpon>UserControlSelezionePersonaggio.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="CharacterAnimation.resx">
-      <DependentUpon>CharacterAnimation.cs</DependentUpon>
+    <EmbeddedResource Include="AnimationBox.resx">
+      <DependentUpon>AnimationBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

@@ -97,10 +97,10 @@ namespace FightingGameClient.UserControls
                 // rimuovi eventuali controlli esistenti nel TableLayoutPanel
                 PanelPersonaggio.Controls.Clear();
 
-                CharacterAnimation animationControl = new CharacterAnimation(nomePersonaggio,0,0, PanelPersonaggio.Width, PanelPersonaggio.Height,Enums.Direction.Right);
+                AnimationBox characterBox = new AnimationBox(nomePersonaggio,"Idle",0,0, PanelPersonaggio.Width, PanelPersonaggio.Height,Enums.Direction.Right);
 
                 personaggioScelto = nomePersonaggio;
-                PanelPersonaggio.Controls.Add(animationControl);
+                PanelPersonaggio.Controls.Add(characterBox);
             }
             catch (Exception ex)
             {

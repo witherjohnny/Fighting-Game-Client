@@ -27,23 +27,28 @@ namespace FightingGameClient.Data
         public static bool animationExists(string personaggio,string animationName)
         {
             
-                Character character = Characters.Find(c => c.Name == personaggio);
-                foreach (string action in character.BaseActions)
-                {
-                    if (action == animationName)
-                    {
-                        return true;
-                    }
-                }
-                foreach (string action in character.Attacks)
-                {
-                    if (action == animationName)
-                    {
-                        return true;
-                    }
-                }
-            
-            return false;
+            Character character = Characters.Find(c => c.Name == personaggio);
+            return BaseActionExists(personaggio, animationName) || AttackExists(personaggio,animationName) || ProjectileExists(personaggio, animationName);
+        }
+        // Check if an animation exists in BaseActions
+        public static bool BaseActionExists(string characterName, string actionName)
+        {
+            Character character = Characters?.Find(c => c.Name == characterName);
+            return character?.BaseActions.Contains(actionName) ?? false;
+        }
+
+        // Check if an animation exists in Attacks
+        public static bool AttackExists(string characterName, string attackName)
+        {
+            Character character = Characters?.Find(c => c.Name == characterName);
+            return character?.Attacks.Contains(attackName) ?? false;
+        }
+
+        // Check if an animation exists in Projectiles
+        public static bool ProjectileExists(string characterName, string projectileName)
+        {
+            Character character = Characters?.Find(c => c.Name == characterName);
+            return character?.Projectiles.Contains(projectileName) ?? false;
         }
     }
 }
