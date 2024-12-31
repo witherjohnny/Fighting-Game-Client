@@ -67,7 +67,7 @@ namespace FightingGameClient.UserControls
             //sfondoGioco.png per sfondo normale
             //sfondoBlur.png per sfondo blurrato
 
-            string immagineSfondo = Path.Combine("Sfondi", "sfondoGioco.png");
+            string immagineSfondo = Path.Combine("Images", "Background","sfondoGioco.png");
 
             //verifica se il file esiste
             if (!File.Exists(immagineSfondo))
@@ -93,7 +93,7 @@ namespace FightingGameClient.UserControls
         private void disegnaPavimento()
         {
             //percorso dell'immagine di sfondo del pavimento
-            string immaginePavimento = Path.Combine("Pavimenti", "pavimento1.png");
+            string immaginePavimento = Path.Combine("Images","Floor", "pavimento1.png");
 
             //verifica se il file esiste
             if (!File.Exists(immaginePavimento))
@@ -137,9 +137,9 @@ namespace FightingGameClient.UserControls
             this.Height = 600;
 
             //inizializza i player
-            playerLocal = new Player(personaggio, 100, 300); // personaggio locale
+            playerLocal = new Player(personaggio, 100, 300,Direction.Right); // personaggio locale
             //coordinate e nome date dal server
-            playerRemote = new Player("Warrior_2", 500, 300); // personaggio remoto
+            playerRemote = new Player("Warrior_2", 500, 300, Direction.Left); // personaggio remoto
 
             this.Controls.Add(playerLocal.getCharacterBox());
             this.Controls.Add(playerRemote.getCharacterBox());
@@ -172,16 +172,16 @@ namespace FightingGameClient.UserControls
             if (e.KeyCode == Keys.Left)
             {
                 playerLocal.X -= playerLocal.Speed;
-                playerLocal.setAnimation("Run");
+                //playerLocal.setAnimation("Run");
             }
             else if (e.KeyCode == Keys.Right)
             {
                 playerLocal.X += playerLocal.Speed;
-                playerLocal.setAnimation("Run");
+                //playerLocal.setAnimation("Run");
             }
             else if (e.KeyCode == Keys.Space)
             {
-                playerLocal.setAnimation("Run");
+                //playerLocal.setAnimation("Run");
             }
         }
 
@@ -190,7 +190,7 @@ namespace FightingGameClient.UserControls
         {
             if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right || e.KeyCode == Keys.Space)
             {
-                playerLocal.setAnimation("Idle");
+                //playerLocal.setAnimation("Idle");
             }
         }
         private async void StartServerCommunication()

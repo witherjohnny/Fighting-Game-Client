@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
 using FightingGameClient.Data;
+using FightingGameClient.Enums;
 
 namespace FightingGameClient
 {
@@ -19,8 +20,9 @@ namespace FightingGameClient
         private string currentAnimation;
         private bool runOnce; //se false continuera a fare la stessa animazione, ma puo cambiare animazione in qualsiasi momento. se true cicla una volta e ritorna ad idle
         private bool isCancelable; //finche l'animazione corrente non ha finito non puo cambiare animazione
+        private Direction direction;
         private static readonly object _lock = new object();
-        public CharacterAnimation(string personaggio, int width, int height)
+        public CharacterAnimation(string personaggio, int x, int y, int width, int height, Direction direction)
         {
             InitializeComponent();
             this.personaggio = personaggio;
@@ -29,9 +31,10 @@ namespace FightingGameClient
             this.currentAnimation = "Idle";
             this.runOnce = false;
             this.isCancelable = true;
+            this.direction = direction;
+            setPosition(x, y);
 
-            
-            LoadFrames($"Sprites/{this.personaggio}/{this.currentAnimation}");
+            LoadFrames($"Images/Sprites/{this.personaggio}/{this.currentAnimation}");
             //imposta il timer per l'animazione
             animationTimer = new Timer();
             animationTimer.Interval = 100;
@@ -58,7 +61,7 @@ namespace FightingGameClient
 
                         this.runOnce = false;
                         this.isCancelable = true;
-                        setAnimation("Idle", false, true);
+                        setAnimation("Idle",this.direction, false, true);
                         return;
                     }
                 }
@@ -66,25 +69,33 @@ namespace FightingGameClient
                 {
                     this.currentFrame = (this.currentFrame + 1) % frames.Count;
                 }
-                this.BackgroundImage = frames[currentFrame];
-            }
-        }
-        public void setAnimation(String animation)
-        {
-            lock (_lock)
-            {
-                if (CharactersData.animationExists(this.personaggio, animation))
+
+                // Get the current frame and flip it if direction is Left
+                Image currentImage = frames[currentFrame];
+                if (this.direction == Direction.Left)
                 {
-                    if (isCancelable)
-                    {
-                        this.currentAnimation = animation;
-                        LoadFrames($"Sprites/{this.personaggio}/{this.currentAnimation}");
-                        StartAnimation();
-                    }
+                    currentImage = FlipImage(currentImage);
                 }
+                this.BackgroundImage = currentImage;
             }
         }
-        public void setAnimation(String animation,bool runOnce, bool isCancelable)
+        private Image FlipImage(Image image)
+        {
+            if (image == null) return null;
+
+            // Create a new bitmap to hold the flipped image
+            Bitmap flippedImage = new Bitmap(image.Width, image.Height);
+            using (Graphics g = Graphics.FromImage(flippedImage))
+            {
+                // Flip the image horizontally
+                g.DrawImage(image, new Rectangle(0, 0, image.Width, image.Height),
+                    new Rectangle(image.Width, 0, -image.Width, image.Height),
+                    GraphicsUnit.Pixel);
+            }
+
+            return flippedImage;
+        }
+        public void setAnimation(String animation, Direction direction, bool runOnce, bool isCancelable)
         {
             lock (_lock)
             {
@@ -92,13 +103,22 @@ namespace FightingGameClient
                 {
                     if (this.isCancelable)
                     {
+                        this.direction = direction;
                         this.currentAnimation = animation;
-                        LoadFrames($"Sprites/{this.personaggio}/{this.currentAnimation}");
-                        StartAnimation();
                         this.runOnce = runOnce;
                         this.isCancelable = isCancelable;
+                        LoadFrames($"Images/Sprites/{this.personaggio}/{this.currentAnimation}");
+                        StartAnimation();
+                        
                     }
                 }
+            }
+        }
+        public void setDirection(Direction direction)
+        {
+            lock(_lock)
+            {
+                this.direction = direction;
             }
         }
         public void setPosition(int x, int y)

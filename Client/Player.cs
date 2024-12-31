@@ -20,24 +20,23 @@ public class Player
 
     public Player()
     {
-        characterBox = new CharacterAnimation("",0,0);
         characterBox = null;
         currentDirection = Direction.Right;
         Speed = 5; //velocità predefinita
     }
 
-    public Player(string characterName, int startX, int startY)
+    public Player(string characterName, int startX, int startY,Direction direction)
     {
         X = startX;
         Y = startY;
         Speed = 5;
 
-        characterBox = new CharacterAnimation(characterName, 80, 80);
-        characterBox.setPosition(X, Y);
+        characterBox = new CharacterAnimation(characterName, X, Y, 128, 128, direction);
+
     }
-    public void setAnimation(string animationName)
+    public void setAnimation(string animationName,Direction direction, bool runOnce, bool isCancelable)
     {
-        characterBox.setAnimation(animationName);
+        characterBox.setAnimation(animationName, direction, runOnce,isCancelable);
     }
    
     public CharacterAnimation getCharacterBox() { return this.characterBox; }
@@ -47,7 +46,7 @@ public class Player
         X -= Speed;
 
         //aggiorna l'animazione corrente
-        characterBox.setAnimation("Run");
+        //characterBox.setAnimation("Run");
         currentDirection = Direction.Left; //cambia la direzione a sinistra
     }
 
@@ -57,7 +56,7 @@ public class Player
         X += Speed;
 
         //aggiorna l'animazione corrente
-        characterBox.setAnimation("Run");
+        //characterBox.setAnimation("Run");
         currentDirection = Direction.Right; //cambia la direzione a destra
     }
 
@@ -70,27 +69,14 @@ public class Player
         Y -= jumpHeight; //alza il giocatore
 
         //aggiorna l'animazione
-        characterBox.setAnimation("Jump");
+        //characterBox.setAnimation("Jump");
 
         //simula la discesa (puoi aggiungere un timer per rendere il salto più realistico)
         Task.Delay(500).ContinueWith(_ =>
         {
             Y += jumpHeight;
             isJumping = false;
-            characterBox.setAnimation("Idle");
+            //characterBox.setAnimation("Idle");
         });
-    }
-
-    public void Attack()
-    {
-        characterBox.setAnimation("Attack_1");
-        characterBox.setAnimation("Attack_2");
-
-        //logica per verificare il successo dell'attacco (da implementare)
-    }
-    public void Idle()
-    {
-        //torna all'animazione "Idle"
-        characterBox.setAnimation("Idle");
     }
 }

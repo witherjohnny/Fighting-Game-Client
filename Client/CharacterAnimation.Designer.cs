@@ -35,9 +35,10 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.Transparent;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.DoubleBuffered = true;
             this.Name = "CharacterAnimation";
-            this.Size = new System.Drawing.Size(324, 336);
+            this.Size = new System.Drawing.Size(322, 334);
             this.ResumeLayout(false);
 
         }

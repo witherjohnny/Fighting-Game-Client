@@ -92,21 +92,13 @@ namespace FightingGameClient.UserControls
 
         private void loadSelected(String nomePersonaggio)
         {
-            //configura il percorso delle animazioni
-            string spriteFolderPath = "Sprites/" + nomePersonaggio + "/Idle";
-
-            //ANIMAZIONE IDLE 
             try
             {
                 // rimuovi eventuali controlli esistenti nel TableLayoutPanel
                 PanelPersonaggio.Controls.Clear();
 
-                CharacterAnimation animationControl = new CharacterAnimation(nomePersonaggio, PanelPersonaggio.Width, PanelPersonaggio.Height);
+                CharacterAnimation animationControl = new CharacterAnimation(nomePersonaggio,0,0, PanelPersonaggio.Width, PanelPersonaggio.Height,Enums.Direction.Right);
 
-                //configura il controllo per caricare i frame e avviare l'animazione
-                animationControl.LoadFrames(spriteFolderPath);
-                animationControl.Visible = true;
-                animationControl.StartAnimation();
                 personaggioScelto = nomePersonaggio;
                 PanelPersonaggio.Controls.Add(animationControl);
             }
