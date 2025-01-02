@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using FightingGameClient.Data;
 using FightingGameClient.Enums;
 
 namespace FightingGameClient.UserControls
@@ -17,24 +18,23 @@ namespace FightingGameClient.UserControls
         private string personaggio;
 
         //private Timer gameTimer; // timer per aggiornare il gioco
-        private Player playerLocal; // player locale controllato dall'utente
-        private Player playerRemote; // player remoto aggiornato dal server
+        private Player playerLocal = null; // player locale controllato dall'utente
+        private Player playerRemote = null; // player remoto aggiornato dal server
 
-        private const int FrameRate = 60; //frame al secondo (FPS)
+        private const int FrameRate = 1; //frame al secondo (FPS)
 
         private UdpClient client = UdpClientSingleton.Instance;
-
-
 
         //costruttore del controllo
         public UserControlGioco(string personaggio)
         {
             InitializeComponent();
             this.personaggio = personaggio;
-
             InitializeGame();
             //avvia la comunicazione con il server
-            StartServerCommunication();
+            ReceivePlayerData();
+
+
 
             //grafica
             stileLabels();
@@ -44,7 +44,6 @@ namespace FightingGameClient.UserControls
 
             disegnaBackground();
             disegnaPavimento();
-
             label1.Text = $"Personaggio selezionato: {personaggio}";
         }
 
@@ -60,14 +59,13 @@ namespace FightingGameClient.UserControls
             label2.BackColor = Color.Transparent; //trasparente per mostrare sfondo del gioco
             label2.TextAlign = ContentAlignment.MiddleCenter;
         }
-
         private void disegnaBackground()
         {
             //percorso dell'immagine di sfondo
             //sfondoGioco.png per sfondo normale
             //sfondoBlur.png per sfondo blurrato
 
-            string immagineSfondo = Path.Combine("Images", "Background","sfondoGioco.png");
+            string immagineSfondo = Path.Combine("Images", "Background", "sfondoGioco.png");
 
             //verifica se il file esiste
             if (!File.Exists(immagineSfondo))
@@ -87,13 +85,10 @@ namespace FightingGameClient.UserControls
                 MessageBox.Show($"Errore durante il caricamento dello sfondo: {ex.Message}", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-
-
         private void disegnaPavimento()
         {
             //percorso dell'immagine di sfondo del pavimento
-            string immaginePavimento = Path.Combine("Images","Floor", "pavimento1.png");
+            string immaginePavimento = Path.Combine("Images", "Floor", "pavimento1.png");
 
             //verifica se il file esiste
             if (!File.Exists(immaginePavimento))
@@ -126,9 +121,6 @@ namespace FightingGameClient.UserControls
                 this.Controls.Add(blocco);
             }
         }
-
-
-
         //inizializza la UI di gioco
         private void InitializeGame()
         {
@@ -137,12 +129,12 @@ namespace FightingGameClient.UserControls
             this.Height = 600;
 
             //inizializza i player
-            playerLocal = new Player(personaggio, 100, 300,Direction.Right); // personaggio locale
+            playerLocal = new Player("local", personaggio, 100, 300, Direction.Right); // personaggio locale
             //coordinate e nome date dal server
-            playerRemote = new Player("Warrior_2", 500, 300, Direction.Left); // personaggio remoto
+            //playerRemote = new Player("Warrior_2", 500, 300, Direction.Left); // personaggio remoto
 
             this.Controls.Add(playerLocal.getCharacterBox());
-            this.Controls.Add(playerRemote.getCharacterBox());
+            //this.Controls.Add(playerRemote.getCharacterBox());
 
             //inizializza il timer del gioco
             System.Windows.Forms.Timer gameTimer = new System.Windows.Forms.Timer();
@@ -154,18 +146,20 @@ namespace FightingGameClient.UserControls
             this.KeyDown += UserControlGioco_KeyDown;
             this.KeyUp += UserControlGioco_KeyUp;
         }
-
         private void GameTimer_Tick(object sender, EventArgs e)
         {
             //aggiorna lo stato dei player
             //playerLocal.Update();
             //playerRemote.Update();
+            Random random = new Random();
 
-            //aggiorna il disegno
-            //this.Invalidate(); //chiama OnPaint
+            // Generate two random numbers between 0 and 600
+            int number1 = random.Next(0, 601); // 601 because the upper bound is exclusive
+            int number2 = random.Next(0, 601);
+
+            playerLocal.setPosition(number1, number2);
+            SendPlayerData();
         }
-
-
         //gestione del movimento con tastiera
         private void UserControlGioco_KeyDown(object sender, KeyEventArgs e)
         {
@@ -184,8 +178,6 @@ namespace FightingGameClient.UserControls
                 //playerLocal.setAnimation("Run");
             }
         }
-
-
         private void UserControlGioco_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right || e.KeyCode == Keys.Space)
@@ -193,7 +185,7 @@ namespace FightingGameClient.UserControls
                 //playerLocal.setAnimation("Idle");
             }
         }
-        private async void StartServerCommunication()
+        private async void ReceivePlayerData()
         {
             //simula ricezione dati dal server in un thread separato
             await Task.Run(() =>
@@ -211,27 +203,32 @@ namespace FightingGameClient.UserControls
                         string serverResponse = Encoding.ASCII.GetString(dataReceived);
 
                         //aggiorna le coordinate del player remoto
-                        string[] data = serverResponse.Split(',');
-                        if (data.Length == 4)
+                        string[] data = serverResponse.Split(';');
+                        if (data.Length == 6)
                         {
-                            int id = int.Parse(data[0]);
+                            string id = data[0];
                             int x = int.Parse(data[1]);
                             int y = int.Parse(data[2]);
                             string character = data[3];
-
-                            //aggiorna i dati del giocatore remoto
-                            if (id != playerLocal.Id)
+                            Direction direction = data[4] == "Right" ? Direction.Right : Direction.Left;
+                            string action = data[5];
+                            this.Invoke(new Action(() =>
                             {
-                                playerRemote.X = x;
-                                playerRemote.Y = y;
-                                if (playerRemote.nome != character)
+                                // Costruisce il player remoto se è la prima volta che riceve dati
+                                if (playerRemote == null)
                                 {
-                                    playerRemote.nome = character;
+                                    playerRemote = new Player(id, character, x, y, direction);
+                                    this.Controls.Add(playerRemote.getCharacterBox());
                                 }
-                            }
-                        }
 
-                        Thread.Sleep(100); //aspetta prima del prossimo aggiornamento
+                                // Aggiorna i dati del giocatore remoto
+                                if (id == playerRemote.getId())
+                                {
+                                    playerRemote.setPosition(x, y);
+                                    playerRemote.setAnimation(action, direction, false, true);
+                                }
+                            }));
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -243,22 +240,24 @@ namespace FightingGameClient.UserControls
         }
 
         //invia i dati del giocatore locale al server
-        /*
-        private void SendPlayerData()
+
+        private async void SendPlayerData()
         {
+            
             try
             {
-                if (client != null)
+                if (playerLocal != null && client != null)
                 {
-                    string message = $"1;{playerLocal.X};{playerLocal.Y};{personaggio}";
+                    string message = $"playerInfo;{playerLocal.X};{playerLocal.Y};{playerLocal.getCharacterBox().getDirection()};{playerLocal.getCharacterBox().getCurrentAnimation()}";
                     byte[] data = Encoding.ASCII.GetBytes(message);
                     client.Send(data, data.Length, ServerSettings.Ip, (int)ServerSettings.Port);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Errore durante l'invio dei dati: {ex.Message}", "Errore");
+                Console.WriteLine($"Errore durante l'invio dei dati: {ex.Message}");
             }
-        }*/
+               
+        }
     }
 }

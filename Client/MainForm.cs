@@ -21,6 +21,7 @@ namespace FightingGameClient
         {
             InitializeComponent();
             // carica il primo controllo utente
+            this.AllowTransparency = true;
             LoadHome();
         }
         private void LoadHome()

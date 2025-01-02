@@ -3,7 +3,7 @@
     "Name": "FireWizard",
     "BaseActions": [ "Idle", "Run", "Jump", "Dead","Hurt","Rest","Roll","Walk" ],
     "Attacks": [ "Fireball", "Flame_Jet", "AreaAttack", "Attack_1", "Attack_2" ],
-    "Projectiles": [ "Charge"],
+    "Projectiles": [ "Charge"]
   },
   {
     "Name": "Warrior_2",

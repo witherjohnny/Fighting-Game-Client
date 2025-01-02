@@ -99,7 +99,8 @@ namespace FightingGameClient
 
             return flippedImage;
         }
-        public void setAnimation(String animation, Direction direction, bool runOnce, bool isCancelable)
+        public string getCurrentAnimation() { return currentAnimation; }
+        public void setAnimation(string animation, Direction direction, bool runOnce, bool isCancelable)
         {
             lock (_lock)
             {
@@ -117,6 +118,10 @@ namespace FightingGameClient
                     }
                 }
             }
+        }
+        public Direction getDirection()
+        {
+            return this.direction;
         }
         public void setDirection(Direction direction)
         {
@@ -174,6 +179,5 @@ namespace FightingGameClient
             }
         }
         
-       
     }
 }

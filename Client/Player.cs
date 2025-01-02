@@ -10,7 +10,7 @@ public class Player
     public int X { get; set; }
     public int Y { get; set; }
     public int Speed { get; set; }
-    public int Id { get; set; }
+    private string Id { get; }
     private bool isJumping;
     private int jumpHeight = 50;
     public string nome { get; set; }
@@ -25,8 +25,9 @@ public class Player
         Speed = 5; //velocità predefinita
     }
 
-    public Player(string characterName, int startX, int startY,Direction direction)
+    public Player(string id,string characterName, int startX, int startY,Direction direction)
     {
+        Id = id;
         X = startX;
         Y = startY;
         Speed = 5;
@@ -38,7 +39,13 @@ public class Player
     {
         characterBox.setAnimation(animationName, direction, runOnce,isCancelable);
     }
-   
+    public void setPosition(int x, int y)
+    {
+        this.X= x;
+        this.Y= y;
+        characterBox.setPosition(X,Y);
+    }
+    public string getId() { return Id; }
     public AnimationBox getCharacterBox() { return this.characterBox; }
     public void MoveLeft()
     {
