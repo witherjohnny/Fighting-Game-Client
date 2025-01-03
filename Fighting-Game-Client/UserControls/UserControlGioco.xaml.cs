@@ -1,48 +1,42 @@
-﻿using System;
+﻿using Fighting_Game_Client.Data;
+using Fighting_Game_Client.Enums;
+using Fighting_Game_Client;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
-using System.Net;
-using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Fighting_Game_Client.Data;
+using System.Windows.Media;
+using System.Windows;
+using System;
+using System.Net;
 using System.IO;
-using Fighting_Game_Client.Enums;
 
 namespace Fighting_Game_Client.UserControls
 {
-    /// <summary>
-    /// Logica di interazione per UserControlGioco.xaml
-    /// </summary>
     public partial class UserControlGioco : UserControl
     {
         private string personaggio;
-
-        //private Timer gameTimer; // timer per aggiornare il gioco
         private Player playerLocal = null; // player locale controllato dall'utente
         private Player playerRemote = null; // player remoto aggiornato dal server
 
-        private const int FrameRate = 60; //frame al secondo (FPS)
+        private const int FrameRate = 1; //frame al secondo (FPS)
 
         private UdpClient client = UdpClientSingleton.Instance;
+        private List<Rect> obstacles; //lista di ostacoli (pavimento)
+        private bool isJumping = false; //stato del salto
+        private bool isMoving = false; //stato del movimento orizzontale
+        private bool isFalling = false; //stato per la discesa
 
-        //costruttore del controllo
         public UserControlGioco(string personaggio)
         {
             InitializeComponent();
             this.personaggio = personaggio;
             InitializeGame();
         }
+
         private void Grid_Loaded(object sender, RoutedEventArgs e)
         {
             
@@ -50,12 +44,9 @@ namespace Fighting_Game_Client.UserControls
             ReceivePlayerData();
             disegnaPavimento();
             label1.Content = $"Personaggio selezionato: {personaggio}";
-            //grafica
             stileLabels();
-
-            //es rosso poca vita, verde tanta vita
-            //stileProgressBars();
         }
+
         private void stileLabels()
         {
             label1.FontSize = 14;
@@ -70,9 +61,9 @@ namespace Fighting_Game_Client.UserControls
             label2.Background = Brushes.Transparent;
             label2.HorizontalContentAlignment = HorizontalAlignment.Center;
         }
-        
+
         private void disegnaPavimento()
-        {
+        { 
             //percorso dell'immagine di sfondo del pavimento
             string immaginePavimento = System.IO.Path.Combine("Images", "Floor", "pavimento1.png");
 
@@ -83,53 +74,58 @@ namespace Fighting_Game_Client.UserControls
                 return;
             }
 
-            //dimensioni del pavimento
-            int numeroBlocchiTotali = 10; //numero totale di blocchi
-            int numeroBlocchiPavimento = numeroBlocchiTotali - 4; //blocchi effettivi (lasciando 2 vuoti per lato)
-            int larghezzaBlocco = (int)(this.ActualWidth * 2 / numeroBlocchiTotali);
-            int altezzaBlocco = 100; //altezza fissa del pavimento
-            int yPavimento = (int)(this.ActualHeight - altezzaBlocco); //posizione verticale del pavimento
-            int xInizioPavimento = larghezzaBlocco * 2; //inizio del pavimento (salta 2 blocchi a sinistra)
+            //numero fisso di blocchi
+            int numeroBlocchiPavimento = 6;  
+            int larghezzaBlocco = 150;       //larghezza fissa di ciascun blocco
+            int altezzaBlocco = 100;         //altezza fissa del pavimento
+            int yPavimento = (int)(this.ActualHeight - altezzaBlocco);  //posizione verticale del pavimento (in fondo alla finestra)
+
+            //crea l'immagine del pavimento
             BitmapImage bitmap = new BitmapImage();
             bitmap.BeginInit();
             bitmap.UriSource = new Uri(immaginePavimento, UriKind.RelativeOrAbsolute);
-            bitmap.CacheOption = BitmapCacheOption.OnLoad; // Fully load image into memory
+            bitmap.CacheOption = BitmapCacheOption.OnLoad; 
             bitmap.EndInit();
-            for (int i = 0; i < numeroBlocchiPavimento; i++)
-            {
 
+            //calcola lo spazio vuoto ai lati
+            int spazioLato = (int)((this.ActualWidth - (numeroBlocchiPavimento * larghezzaBlocco)) / 2);
+
+            //aggiungi i blocchi del pavimento uno accanto all'altro
+            for (int i = 0; i<numeroBlocchiPavimento; i++)
+            {
                 Image floorBlock = new Image
                 {
-                    Width = larghezzaBlocco,
-                    Height = altezzaBlocco,
+                    Width = larghezzaBlocco,  //imposta la larghezza del blocco
+                    Height = altezzaBlocco,   //imposta l'altezza del blocco
                     Source = bitmap,
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Top
                 };
 
-               
-                Canvas.SetLeft(floorBlock, xInizioPavimento + (i * larghezzaBlocco));
+                //posizione X di ciascun blocco (spazio vuoto a sinistra e posizionamento dei blocchi)
+                Canvas.SetLeft(floorBlock, spazioLato + i* larghezzaBlocco);
+
+                //posizione Y fissa (il pavimento è sempre in fondo alla finestra)
                 Canvas.SetTop(floorBlock, yPavimento);
 
-                // Add each block to the Canvas
+                //aggiungi ogni blocco al Canvas
                 canvas.Children.Add(floorBlock);
             }
         }
-        //inizializza la UI di gioco
+
         private void InitializeGame()
         {
             this.Width = 800;
             this.Height = 600;
 
-            //inizializza i player
-            playerLocal = new Player("local", personaggio, 100, 300, Direction.Right); // personaggio locale
-            //coordinate e nome date dal server
-            //playerRemote = new Player("Warrior_2", 500, 300, Direction.Left); // personaggio remoto
-
+            playerLocal = new Player("local", personaggio, 100, 300, Direction.Right); //posizione iniziale a sinistra
             canvas.Children.Add(playerLocal.getCharacterBox());
-            //this.Controls.Add(playerRemote.getCharacterBox());
 
-            //inizializza il timer del gioco
+            obstacles = new List<Rect>
+            {
+                new Rect(0, 550, 800, 50) //pavimento (ostacolo)
+            };
+
             System.Windows.Threading.DispatcherTimer gameTimer = new System.Windows.Threading.DispatcherTimer
             {
                 Interval = TimeSpan.FromMilliseconds(1000 / FrameRate)
@@ -137,51 +133,72 @@ namespace Fighting_Game_Client.UserControls
             gameTimer.Tick += GameTimer_Tick;
             gameTimer.Start();
 
-            //gestione eventi della tastiera
             this.KeyDown += UserControlGioco_KeyDown;
             this.KeyUp += UserControlGioco_KeyUp;
         }
+
         private void GameTimer_Tick(object sender, EventArgs e)
         {
-            //aggiorna lo stato dei player
-            //playerLocal.Update();
-            //playerRemote.Update();
+            if (isJumping)
+            {
+                HandleJump();
+            }
 
-            //test grafica movimento random
-            //Random random = new Random();
-            //// Generate two random numbers between 0 and 600
-            //int number1 = random.Next(0, 601); // 601 because the upper bound is exclusive
-            //int number2 = random.Next(0, 601);
+            if (isMoving)
+            {
+                SendPlayerData();
+            }
 
-            //playerLocal.setPosition(number1, number2);
-            SendPlayerData();
+            if (isFalling)
+            {
+                HandleFall();
+            }
+
+            ReceivePlayerData();
         }
-        //gestione del movimento con tastiera
+
         private void UserControlGioco_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Left)
+            if (e.Key == Key.A)  //movimento a sinistra
             {
-                playerLocal.X -= playerLocal.Speed;
+                isMoving = true;
+                playerLocal.MoveLeft(obstacles);
+                SendPlayerData();
             }
-            else if (e.Key == Key.Right)
+            else if (e.Key == Key.D)  //movimento a destra
             {
-                playerLocal.X += playerLocal.Speed;
+                isMoving = true;
+                playerLocal.MoveRight(obstacles);
+                SendPlayerData();
             }
-            else if (e.Key == Key.Space)
+            else if (e.Key == Key.W && !isJumping)  //salto
             {
-                // Implement action for Space key
+                isJumping = true;
+                playerLocal.Jump(obstacles);
+                SendPlayerData();
+            }
+            else if (e.Key == Key.S)  //discesa
+            {
+                isFalling = true;
             }
         }
+
         private void UserControlGioco_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Space)
+            if (e.Key == Key.A || e.Key == Key.D)
             {
-                // Implement action when keys are released
+                isMoving = false;
+                playerLocal.setAnimation("Idle", playerLocal.getCharacterBox().getDirection(), true, true);
+            }
+
+            if (e.Key == Key.S)
+            {
+                isFalling = false;
             }
         }
+
         private async void ReceivePlayerData()
         {
-            //simula ricezione dati dal server in un thread separato
             await Task.Run(() =>
             {
                 while (true)
@@ -204,9 +221,14 @@ namespace Fighting_Game_Client.UserControls
 
                             this.Dispatcher.Invoke(() =>
                             {
-                                if (playerRemote == null)
+                                if (playerLocal == null && id == "local")
                                 {
-                                    playerRemote = new Player(id, character, x, y, direction);
+                                    playerLocal = new Player(id, character, 100, 300, Direction.Right);
+                                    canvas.Children.Add(playerLocal.getCharacterBox());
+                                }
+                                else if (playerRemote == null && id != "local")
+                                {
+                                    playerRemote = new Player(id, character, 600, 300, Direction.Left);
                                     canvas.Children.Add(playerRemote.getCharacterBox());
                                 }
 
@@ -226,28 +248,62 @@ namespace Fighting_Game_Client.UserControls
             });
         }
 
-        //invia i dati del giocatore locale al server
-
         private void SendPlayerData()
         {
-
             try
             {
                 if (playerLocal != null && client != null)
                 {
-                    string message = $"playerInfo;{playerLocal.X};{playerLocal.Y};{playerLocal.getCharacterBox().getDirection()};{playerLocal.getCharacterBox().getCurrentAnimation()}";
+                    string message = "playerInfo;playerLocal.X;playerLocal.Y;playerLocal.getCharacterBox().getDirection();playerLocal.getCharacterBox().getCurrentAnimation()";
                     byte[] data = Encoding.ASCII.GetBytes(message);
                     client.Send(data, data.Length, ServerSettings.Ip, (int)ServerSettings.Port);
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Errore durante l'invio dei dati: {ex.Message}");
+            catch (Exception ex) { 
+                Console.WriteLine("Errore durante l'invio dei dati: {ex.Message}");
             }
-
         }
 
-        
-    }
+        private bool CheckCollisionWithTerrain(Rect playerBox)
+        {
+            foreach (var terrain in obstacles)
+            {
+                if (playerBox.IntersectsWith(terrain))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
+        private void HandleJump()
+        {
+            if (playerLocal.Y > 300)
+            {
+                playerLocal.Y -= 5; //salita durante il salto
+                playerLocal.setAnimation("Jump", playerLocal.getCharacterBox().getDirection(), false, true);
+            }
+
+            else
+            {
+                isJumping = false;
+                isFalling = true;
+                playerLocal.setAnimation("Fall", playerLocal.getCharacterBox().getDirection(), false, true);
+            }
+        }
+
+        private void HandleFall()
+        {
+            if (playerLocal.Y < 550)
+            {
+                playerLocal.Y += 5;  //discesa con gravità
+            }
+            else
+            {
+                playerLocal.Y = 550; //allinea al terreno
+                isFalling = false;
+                playerLocal.setAnimation("Idle", playerLocal.getCharacterBox().getDirection(), true, true); //torna in Idle
+            }
+        }
+    }
 }
