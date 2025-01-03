@@ -32,7 +32,7 @@ namespace Fighting_Game_Client.UserControls
         private Player playerLocal = null; // player locale controllato dall'utente
         private Player playerRemote = null; // player remoto aggiornato dal server
 
-        private const int FrameRate = 1; //frame al secondo (FPS)
+        private const int FrameRate = 60; //frame al secondo (FPS)
 
         private UdpClient client = UdpClientSingleton.Instance;
 
@@ -47,7 +47,7 @@ namespace Fighting_Game_Client.UserControls
         {
             
             //avvia la comunicazione con il server
-            //ReceivePlayerData();
+            ReceivePlayerData();
             disegnaPavimento();
             label1.Content = $"Personaggio selezionato: {personaggio}";
             //grafica
