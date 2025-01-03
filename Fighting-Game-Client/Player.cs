@@ -62,6 +62,7 @@ namespace Fighting_Game_Client
             if (!CheckCollisionWithTerrain(new Rect(newX, Y, characterBox.Width, characterBox.Height), obstacles))
             {
                 X = newX;
+                setPosition(X, Y);  //sincronizza posizione con la animazione
                 currentDirection = Direction.Left;
                 setAnimation("Run", Direction.Left, false, true);
             }
@@ -73,7 +74,8 @@ namespace Fighting_Game_Client
             int newX = X + Speed;
             if (!CheckCollisionWithTerrain(new Rect(newX, Y, characterBox.Width, characterBox.Height), obstacles))
             {
-                X = newX;
+                X = newX; 
+                setPosition(X, Y);  //sincronizza posizione con la animazione
                 currentDirection = Direction.Right;
                 setAnimation("Run", Direction.Right, false, true);
             }
@@ -85,6 +87,7 @@ namespace Fighting_Game_Client
             if (isJumping) return; //evita doppi salti
             isJumping = true;
             Y -= jumpHeight; //salto
+            setPosition(X, Y);  //sincronizza posizione con la animazione
             setAnimation("Jump", currentDirection, false, true);
         }
 
@@ -94,6 +97,7 @@ namespace Fighting_Game_Client
             if (!isJumping && Y < 550)  //se non sta saltando e non ha raggiunto il pavimento
             {
                 Y += fallSpeed;  //discesa con gravità
+                setPosition(X, Y);  //sincronizza posizione con la animazione
                 setAnimation("Fall", currentDirection, false, true);
             }
         }
