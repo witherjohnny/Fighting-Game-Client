@@ -5,6 +5,9 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Media3D;
+using System.Diagnostics.Eventing.Reader;
+using System.Windows.Documents;
 
 namespace Fighting_Game_Client
 {
@@ -12,13 +15,15 @@ namespace Fighting_Game_Client
     {
         public int X { get; set; }
         public int Y { get; set; }
+        public int SpeedX { get; set; }
+        public int SpeedY { get; set; }
         public int Speed { get; set; }
         private string Id { get; }
-        private bool isJumping;
-        private bool isFalling;
+
         private int jumpHeight = 50;
-        private int fallSpeed = 5; //velocità della discesa
+        public bool isJumping = false;
         public string nome { get; set; }
+        private int gravita = 1;
 
         private AnimationBox characterBox;
         private Direction currentDirection; //direzione corrente
@@ -55,54 +60,28 @@ namespace Fighting_Game_Client
         public string getId() { return Id; }
         public AnimationBox getCharacterBox() { return this.characterBox; }
 
-        //movimento a sinistra
-        public void MoveLeft(List<Rect> obstacles)
+
+        public Direction getDirection()
         {
-            int newX = X - Speed;
-            if (!CheckCollisionWithTerrain(new Rect(newX, Y, characterBox.Width, characterBox.Height), obstacles))
+            return currentDirection;
+        }
+
+        //fa movimento se non c'è collisione
+        public void Update(List<Rect> obstacles)
+        {
+            int newX = this.X + SpeedX;
+            int newY = this.Y - SpeedY;
+            controllaGravita(new Rect(newX, newY, this.characterBox.Width, this.characterBox.Height), obstacles);
+            if (!CheckCollisionWithTerrain(new Rect(newX, newY, this.characterBox.Width, this.characterBox.Height), obstacles))
             {
-                X = newX;
-                setPosition(X, Y);  //sincronizza posizione con la animazione
-                currentDirection = Direction.Left;
-                setAnimation("Run", Direction.Left, false, true);
+                this.X += SpeedX;
+                this.Y -= SpeedY;
+                if (this.characterBox != null)
+                    this.characterBox.setPosition(newX, newY);
             }
         }
 
-        //movimento a destra
-        public void MoveRight(List<Rect> obstacles)
-        {
-            int newX = X + Speed;
-            if (!CheckCollisionWithTerrain(new Rect(newX, Y, characterBox.Width, characterBox.Height), obstacles))
-            {
-                X = newX; 
-                setPosition(X, Y);  //sincronizza posizione con la animazione
-                currentDirection = Direction.Right;
-                setAnimation("Run", Direction.Right, false, true);
-            }
-        }
-
-        //gestisce il salto
-        public void Jump(List<Rect> obstacles)
-        {
-            if (isJumping) return; //evita doppi salti
-            isJumping = true;
-            Y -= jumpHeight; //salto
-            setPosition(X, Y);  //sincronizza posizione con la animazione
-            setAnimation("Jump", currentDirection, false, true);
-        }
-
-        //gestisce la discesa
-        public void Fall()
-        {
-            if (!isJumping && Y < 550)  //se non sta saltando e non ha raggiunto il pavimento
-            {
-                Y += fallSpeed;  //discesa con gravità
-                setPosition(X, Y);  //sincronizza posizione con la animazione
-                setAnimation("Fall", currentDirection, false, true);
-            }
-        }
-
-        //controlla la collisione con il terreno
+        //controllo collisione
         private bool CheckCollisionWithTerrain(Rect playerBox, List<Rect> obstacles)
         {
             foreach (var terrain in obstacles)
@@ -114,28 +93,18 @@ namespace Fighting_Game_Client
             }
             return false;
         }
-       
-        //gestisce la fine del salto quando il personaggio tocca il pavimento
-        public void Land()
-        {
-            if (Y >= 550)  //quando il giocatore tocca il pavimento (Y = 550)
-            {
-                Y = 550;
-                isJumping = false;
-                setAnimation("Idle", currentDirection, true, true); //torna all'animazione idle
-            }
-        }
 
-        //funzione per aggiornare il movimento verticale (salto e gravità)
-        public void Update(List<Rect> obstacles)
+        private void controllaGravita(Rect playerBox, List<Rect> obstacles)
         {
-            if (isJumping)
+            if(CheckCollisionWithTerrain(playerBox, obstacles))//atterrato
             {
-                Fall();  //gestisce la discesa dopo il salto
+                this.isJumping = false;
+                this.SpeedY = 0;
             }
-            else
+            else //vuoto sotto
             {
-                Land();  //se il personaggio ha raggiunto il pavimento, ferma la discesa
+                //characterBox.setAnimation("Fall", this.Direction, false, true);
+                this.SpeedY -= this.gravita;
             }
         }
     }

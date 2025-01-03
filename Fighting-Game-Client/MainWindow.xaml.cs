@@ -35,7 +35,7 @@ namespace Fighting_Game_Client
                 throw new InvalidOperationException("Sever data is not loaded. Please ensure the JSON file is correctly loaded.");
             this.SizeChanged += MainWindow_SizeChanged;
             // carica il primo controllo utente
-            LoadHome();
+            LoadGioco("Warrior_2");
         }
         private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {

@@ -22,13 +22,15 @@ namespace Fighting_Game_Client.UserControls
         private Player playerLocal = null; // player locale controllato dall'utente
         private Player playerRemote = null; // player remoto aggiornato dal server
 
-        private const int FrameRate = 1; //frame al secondo (FPS)
+        private const int FrameRate = 60; //frame al secondo (FPS)
 
         private UdpClient client = UdpClientSingleton.Instance;
-        private List<Rect> obstacles; //lista di ostacoli (pavimento)
+        private List<Rect> obstacles = new List<Rect>(); //lista di ostacoli (pavimento)
         private bool isJumping = false; //stato del salto
         private bool isMoving = false; //stato del movimento orizzontale
         private bool isFalling = false; //stato per la discesa
+
+        private AttackHitBox testHitbox = new AttackHitBox("Charge", 100, 300, 120, 120, "FireWizard", "Charge", Direction.Right);
 
         public UserControlGioco(string personaggio)
         {
@@ -39,7 +41,7 @@ namespace Fighting_Game_Client.UserControls
 
         private void Grid_Loaded(object sender, RoutedEventArgs e)
         {
-            
+            canvas.Focus();
             //avvia la comunicazione con il server
             ReceivePlayerData();
             disegnaPavimento();
@@ -63,7 +65,7 @@ namespace Fighting_Game_Client.UserControls
         }
 
         private void disegnaPavimento()
-        { 
+        {
             //percorso dell'immagine di sfondo del pavimento
             string immaginePavimento = System.IO.Path.Combine("Images", "Floor", "pavimento1.png");
 
@@ -75,7 +77,7 @@ namespace Fighting_Game_Client.UserControls
             }
 
             //numero fisso di blocchi
-            int numeroBlocchiPavimento = 6;  
+            int numeroBlocchiPavimento = 6;
             int larghezzaBlocco = 150;       //larghezza fissa di ciascun blocco
             int altezzaBlocco = 100;         //altezza fissa del pavimento
             int yPavimento = (int)(this.ActualHeight - altezzaBlocco);  //posizione verticale del pavimento (in fondo alla finestra)
@@ -84,14 +86,14 @@ namespace Fighting_Game_Client.UserControls
             BitmapImage bitmap = new BitmapImage();
             bitmap.BeginInit();
             bitmap.UriSource = new Uri(immaginePavimento, UriKind.RelativeOrAbsolute);
-            bitmap.CacheOption = BitmapCacheOption.OnLoad; 
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.EndInit();
 
             //calcola lo spazio vuoto ai lati
             int spazioLato = (int)((this.ActualWidth - (numeroBlocchiPavimento * larghezzaBlocco)) / 2);
 
             //aggiungi i blocchi del pavimento uno accanto all'altro
-            for (int i = 0; i<numeroBlocchiPavimento; i++)
+            for (int i = 0; i < numeroBlocchiPavimento; i++)
             {
                 Image floorBlock = new Image
                 {
@@ -103,7 +105,7 @@ namespace Fighting_Game_Client.UserControls
                 };
 
                 //posizione X di ciascun blocco (spazio vuoto a sinistra e posizionamento dei blocchi)
-                Canvas.SetLeft(floorBlock, spazioLato + i* larghezzaBlocco);
+                Canvas.SetLeft(floorBlock, spazioLato + i * larghezzaBlocco);
 
                 //posizione Y fissa (il pavimento è sempre in fondo alla finestra)
                 Canvas.SetTop(floorBlock, yPavimento);
@@ -111,6 +113,7 @@ namespace Fighting_Game_Client.UserControls
                 //aggiungi ogni blocco al Canvas
                 canvas.Children.Add(floorBlock);
             }
+            obstacles.Add(new Rect(0, 550, 800, 50));
         }
 
         private void InitializeGame()
@@ -133,69 +136,14 @@ namespace Fighting_Game_Client.UserControls
             gameTimer.Tick += GameTimer_Tick;
             gameTimer.Start();
 
-            this.KeyDown += UserControlGioco_KeyDown;
-            this.KeyUp += UserControlGioco_KeyUp;
         }
 
         private void GameTimer_Tick(object sender, EventArgs e)
         {
-            if (isJumping)
-            {
-                HandleJump();
-            }
-
-            if (isMoving)
-            {
-                SendPlayerData();
-            }
-
-            if (isFalling)
-            {
-                HandleFall();
-            }
-
-            ReceivePlayerData();
+            playerLocal.Update(obstacles);
+            SendPlayerData();
         }
 
-        private void UserControlGioco_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.A)  //movimento a sinistra
-            {
-                isMoving = true;
-                playerLocal.MoveLeft(obstacles);
-                SendPlayerData();
-            }
-            else if (e.Key == Key.D)  //movimento a destra
-            {
-                isMoving = true;
-                playerLocal.MoveRight(obstacles);
-                SendPlayerData();
-            }
-            else if (e.Key == Key.W && !isJumping)  //salto
-            {
-                isJumping = true;
-                playerLocal.Jump(obstacles);
-                SendPlayerData();
-            }
-            else if (e.Key == Key.S)  //discesa
-            {
-                isFalling = true;
-            }
-        }
-
-        private void UserControlGioco_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.A || e.Key == Key.D)
-            {
-                isMoving = false;
-                playerLocal.setAnimation("Idle", playerLocal.getCharacterBox().getDirection(), true, true);
-            }
-
-            if (e.Key == Key.S)
-            {
-                isFalling = false;
-            }
-        }
 
         private async void ReceivePlayerData()
         {
@@ -254,12 +202,13 @@ namespace Fighting_Game_Client.UserControls
             {
                 if (playerLocal != null && client != null)
                 {
-                    string message = "playerInfo;playerLocal.X;playerLocal.Y;playerLocal.getCharacterBox().getDirection();playerLocal.getCharacterBox().getCurrentAnimation()";
+                    string message = $"playerInfo;{playerLocal.X};playerLocal.Y;playerLocal.getCharacterBox().getDirection();playerLocal.getCharacterBox().getCurrentAnimation()";
                     byte[] data = Encoding.ASCII.GetBytes(message);
                     client.Send(data, data.Length, ServerSettings.Ip, (int)ServerSettings.Port);
                 }
             }
-            catch (Exception ex) { 
+            catch (Exception ex)
+            {
                 Console.WriteLine("Errore durante l'invio dei dati: {ex.Message}");
             }
         }
@@ -303,6 +252,39 @@ namespace Fighting_Game_Client.UserControls
                 playerLocal.Y = 550; //allinea al terreno
                 isFalling = false;
                 playerLocal.setAnimation("Idle", playerLocal.getCharacterBox().getDirection(), true, true); //torna in Idle
+            }
+        }
+
+        private void canvas_KeyDown_1(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.A)  //movimento a sinistra
+            {
+                playerLocal.setAnimation("Run", Direction.Left, false, true);
+                playerLocal.SpeedX = -5;
+            }
+            else if (e.Key == Key.D)  //movimento a destra
+            {
+                playerLocal.SpeedX = 5;
+                playerLocal.setAnimation("Run", Direction.Right, false, true);
+            }
+            else if (e.Key == Key.W && !playerLocal.isJumping)  //salto
+            {
+                playerLocal.isJumping = true;
+                playerLocal.SpeedY = 5;
+                playerLocal.setAnimation("Jump", playerLocal.getDirection(), false, true);
+            }
+        }
+
+        private void canvas_KeyUp_1(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.A || e.Key == Key.D)
+            {
+                testHitbox.SpeedX = 0;
+            }
+
+            if (e.Key == Key.S || e.Key == Key.W)
+            {
+                testHitbox.SpeedY = 0;
             }
         }
     }
