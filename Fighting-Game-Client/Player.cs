@@ -70,7 +70,7 @@ namespace Fighting_Game_Client
             int newX = this.X + SpeedX;
             int newY = this.Y - SpeedY;
             controllaGravita(obstacles);
-            if (CheckCollisionWithTerrain(new Rect(newX, newY, this.characterBox.Width, this.characterBox.Height), obstacles) == null)
+            if (CheckCollisionWithTerrain(new Rect(newX, newY-1, this.characterBox.Width, this.characterBox.Height), obstacles) == null)
             {
                 this.X += SpeedX;
                 this.Y -= SpeedY;
@@ -97,7 +97,7 @@ namespace Fighting_Game_Client
             Rect? collidedWith = CheckCollisionWithTerrain(new Rect(X, Y - SpeedY, characterBox.Width, characterBox.Height), obstacles);
             if (collidedWith!= null)//atterrato
             {
-                this.Y =(int)(collidedWith.Value.Y - characterBox.Height)-1;
+                this.Y =(int)(collidedWith.Value.Y - characterBox.Height);
                 this.isJumping = false;
                 this.SpeedY = 0;
             }

@@ -121,9 +121,6 @@ namespace Fighting_Game_Client.UserControls
             this.Width = 800;
             this.Height = 600;
 
-            playerLocal = new Player("local", personaggio, 100, 300, Direction.Right); //posizione iniziale a sinistra
-            canvas.Children.Add(playerLocal.getCharacterBox());
-
             obstacles = new List<Rect>
             {
                 new Rect(0, 550, 800, 50) //pavimento (ostacolo)
@@ -140,13 +137,22 @@ namespace Fighting_Game_Client.UserControls
 
         private void GameTimer_Tick(object sender, EventArgs e)
         {
-            playerLocal.Update(obstacles);
+            if(playerLocal!= null)
+            {
+                playerLocal.Update(obstacles);
+            }
             SendPlayerData();
         }
 
 
         private async void ReceivePlayerData()
         {
+            UdpClient udpClient = UdpClientSingleton.Instance;
+
+            string messaggio = "GameLoaded";
+            byte[] bytes = Encoding.ASCII.GetBytes(messaggio);
+
+            udpClient.Send(bytes, bytes.Length, ServerSettings.Ip, (int)ServerSettings.Port);
             await Task.Run(() =>
             {
                 while (true)
@@ -158,25 +164,26 @@ namespace Fighting_Game_Client.UserControls
                         string serverResponse = Encoding.ASCII.GetString(dataReceived);
 
                         string[] data = serverResponse.Split(';');
-                        if (data.Length == 6)
+                        if (data.Length == 7)
                         {
-                            string id = data[0];
-                            int x = int.Parse(data[1]);
-                            int y = int.Parse(data[2]);
-                            string character = data[3];
-                            Direction direction = data[4] == "Right" ? Direction.Right : Direction.Left;
-                            string action = data[5];
+                            bool isLocal = data[0] == "local" ? true : false; 
+                            string id = data[1];
+                            int x = int.Parse(data[2]);
+                            int y = int.Parse(data[3]);
+                            string character = data[4];
+                            Direction direction = data[5] == "Right" ? Direction.Right : Direction.Left;
+                            string action = data[6];
 
                             this.Dispatcher.Invoke(() =>
                             {
-                                if (playerLocal == null && id == "local")
+                                if (playerLocal == null && isLocal)
                                 {
-                                    playerLocal = new Player(id, character, 100, 300, Direction.Right);
+                                    playerLocal = new Player(id, character, x, y, direction);
                                     canvas.Children.Add(playerLocal.getCharacterBox());
                                 }
-                                else if (playerRemote == null && id != "local")
+                                else if (playerRemote == null && !isLocal)
                                 {
-                                    playerRemote = new Player(id, character, 600, 300, Direction.Left);
+                                    playerRemote = new Player(id, character, x, y, direction);
                                     canvas.Children.Add(playerRemote.getCharacterBox());
                                 }
 
@@ -216,6 +223,8 @@ namespace Fighting_Game_Client.UserControls
 
         private void canvas_KeyDown_1(object sender, KeyEventArgs e)
         {
+            if (playerLocal == null)
+                return;
             if (e.Key == Key.A)  //movimento a sinistra
             {
                 playerLocal.setAnimation("Run", Direction.Left, false, true);
@@ -236,6 +245,8 @@ namespace Fighting_Game_Client.UserControls
 
         private void canvas_KeyUp_1(object sender, KeyEventArgs e)
         {
+            if (playerLocal == null)
+                return;
             if (e.Key == Key.A || e.Key == Key.D)
             {
                 playerLocal.SpeedX = 0;
