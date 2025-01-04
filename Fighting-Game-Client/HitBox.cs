@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Fighting_Game_Client
 {
-    internal class HitBox
+    public class HitBox
     {
+        public string Id { get; }
         public string Name { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
@@ -16,6 +17,7 @@ namespace Fighting_Game_Client
 
         public HitBox(string name, int x, int y, int width, int height)
         {
+            Id = Guid.NewGuid().ToString();
             Name = name;
             X = x;
             Y = y;
@@ -31,7 +33,7 @@ namespace Fighting_Game_Client
         }
         public virtual string toCSV()
         {
-            return $"{Name};{X};{Y};{Width};{Height}";
+            return $"{Id};{Name};{X};{Y};{Width};{Height}";
         }
         public override string ToString()
         {

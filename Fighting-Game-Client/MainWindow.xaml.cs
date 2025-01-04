@@ -84,17 +84,17 @@ namespace Fighting_Game_Client
             selezionePersonaggio.Height = this.Height;
 
             //assegna la funzione LoadGioco all'evento PlayClicked
-            selezionePersonaggio.PlayClicked += (personaggio) => LoadGioco(personaggio);
+            selezionePersonaggio.PlayClicked += (s, e) => LoadGioco();
 
             //sostituisce i controlli precedenti nel pannello
             panelContainer.Children.Clear();
             panelContainer.Children.Add(selezionePersonaggio);
         }
 
-        private void LoadGioco(string personaggio)
+        private void LoadGioco()
         {
             //creazione del controllo utente per il gioco, passando il personaggio selezionato
-            var gioco = new UserControlGioco(personaggio);
+            var gioco = new UserControlGioco();
             gioco.HorizontalAlignment = HorizontalAlignment.Stretch;
             gioco.VerticalAlignment = VerticalAlignment.Stretch;
             gioco.Width = this.Width;

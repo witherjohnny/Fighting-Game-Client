@@ -17,7 +17,7 @@ namespace Fighting_Game_Client
         public int Y { get; set; }
         public int SpeedX { get; set; }
         public int SpeedY { get; set; }
-        public int Speed { get; set; }
+        public int Health { get; set; }
         private string Id { get; }
 
         public bool isJumping = false;
@@ -28,22 +28,22 @@ namespace Fighting_Game_Client
         private int gravita = 1;
 
         private AnimationBox characterBox;
+        private PlayerHitBox playerHitbox;
 
         public Player()
         {
             characterBox = null;
-            Speed = 5; //velocità predefinita
+            playerHitbox = null;
         }
 
-        public Player(string id, string characterName, int startX, int startY, Direction direction)
+        public Player(string id, string characterName, int startX, int startY, Direction direction, PlayerHitBox hitbox)
         {
             Id = id;
             nome=characterName;
             X = startX;
             Y = startY;
-            Speed = 5;
-
             characterBox = new AnimationBox(characterName, "Idle", X, Y, 128, 128, direction);
+            playerHitbox = hitbox;
         }
 
         public void setAnimation(string animationName, Direction direction, bool runOnce, bool isCancelable)
@@ -55,11 +55,14 @@ namespace Fighting_Game_Client
         {
             this.X = x;
             this.Y = y;
+            this.playerHitbox.X = x;
+            this.playerHitbox.Y = y;
             characterBox.setPosition(X, Y);
         }
 
         public string getId() { return Id; }
         public AnimationBox getCharacterBox() { return this.characterBox; }
+        public PlayerHitBox GetPlayerHitBox() { return this.playerHitbox; }
 
 
         public Direction getDirection()

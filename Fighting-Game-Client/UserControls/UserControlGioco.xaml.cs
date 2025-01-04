@@ -13,12 +13,12 @@ using System.Windows;
 using System;
 using System.Net;
 using System.IO;
+using System.Windows.Markup;
 
 namespace Fighting_Game_Client.UserControls
 {
     public partial class UserControlGioco : UserControl
     {
-        private string personaggio;
         private Player playerLocal = null; // player locale controllato dall'utente
         private Player playerRemote = null; // player remoto aggiornato dal server
 
@@ -26,10 +26,11 @@ namespace Fighting_Game_Client.UserControls
 
         private UdpClient client = UdpClientSingleton.Instance;
         private List<Rect> obstacles = new List<Rect>(); //lista di ostacoli (pavimento)
-        public UserControlGioco(string personaggio)
+        private List<HitBox> hitboxes = new List<HitBox>(); 
+        private List<HitBox> remoteHitboxes = new List<HitBox>(); 
+        public UserControlGioco()
         {
             InitializeComponent();
-            this.personaggio = personaggio;
             InitializeGame();
         }
 
@@ -39,7 +40,6 @@ namespace Fighting_Game_Client.UserControls
             //avvia la comunicazione con il server
             ReceivePlayerData();
             disegnaPavimento();
-            label1.Content = $"Personaggio selezionato: {personaggio}";
             stileLabels();
         }
 
@@ -124,6 +124,7 @@ namespace Fighting_Game_Client.UserControls
                 playerLocal.Update(obstacles);
             }
             SendPlayerData();
+            SendHitboxesData();
         }
 
 
@@ -144,37 +145,89 @@ namespace Fighting_Game_Client.UserControls
                         IPEndPoint receiveEP = new IPEndPoint(IPAddress.Any, 0);
                         byte[] dataReceived = client.Receive(ref receiveEP);
                         string serverResponse = Encoding.ASCII.GetString(dataReceived);
+                        string typeOfMessage = null;
 
-                        string[] data = serverResponse.Split(';');
-                        if (data.Length == 7)
+                        string[] allData = serverResponse.Split('\n');
+                        foreach(string riga in allData)
                         {
-                            bool isLocal = data[0] == "local" ? true : false; 
-                            string id = data[1];
-                            int x = int.Parse(data[2]);
-                            int y = int.Parse(data[3]);
-                            string character = data[4];
-                            Direction direction = data[5] == "Right" ? Direction.Right : Direction.Left;
-                            string action = data[6].Trim();
-
-                            this.Dispatcher.Invoke(() =>
+                            if(typeOfMessage == null)
                             {
-                                if (playerLocal == null && isLocal)
+                                typeOfMessage = riga;
+                                continue;
+                            }
+                            string[] data = riga.Split(';');
+                            if (typeOfMessage == "playerInfo")
+                            {
+                                bool isLocal = data[0] == "local" ? true : false;
+                                string id = data[1];
+                                int x = int.Parse(data[2]);
+                                int y = int.Parse(data[3]);
+                                string character = data[4];
+                                Direction direction = data[5] == "Right" ? Direction.Right : Direction.Left;
+                                string action = data[6];
+                                int health = int.Parse(data[7]);
+                                int width = int.Parse(data[8]);
+                                int height = int.Parse(data[9].Trim());
+
+                                this.Dispatcher.Invoke(() =>
                                 {
-                                    playerLocal = new Player(id, character, x, y, direction);
-                                    canvas.Children.Add(playerLocal.getCharacterBox());
-                                }
-                                else if (playerRemote == null && !isLocal)
+                                    if (playerLocal == null && isLocal)
+                                    {
+                                        PlayerHitBox playerHitbox = new PlayerHitBox(id, x, y, width, height);
+
+                                        playerLocal = new Player(id, character, x, y, direction,playerHitbox);
+                                        playerLocal.Health = health;
+                                        progressBarVitaGiocatore1.Value = health;
+                                        label1.Content = $"P1: {character}";
+                                        canvas.Children.Add(playerLocal.getCharacterBox());
+                                    }
+                                    else if (playerRemote == null && !isLocal)
+                                    {
+                                        PlayerHitBox playerHitbox = new PlayerHitBox(id, x, y, width, height);
+
+                                        playerRemote = new Player(id, character, x, y, direction, playerHitbox);
+                                        label2.Content = $"P2: {character}";
+                                        progressBarVitaGiocatore2.Value = health;
+                                        playerRemote.Health = health;
+                                        canvas.Children.Add(playerRemote.getCharacterBox());
+                                    }
+                                    else if (id == playerRemote.getId() && !isLocal)
+                                    {
+                                        playerRemote.setPosition(x, y);
+                                        playerRemote.setAnimation(action, direction, false, true);
+                                    }
+                                    else if (id == playerLocal.getId() && isLocal)
+                                    {
+                                        playerLocal.Health = health;
+                                    }
+                                });
+                            }else if(typeOfMessage == "hitboxes")
+                            {
+                                string id = data[0];
+                                string name = data[1];
+                                int x = int.Parse(data[2]);
+                                int y = int.Parse(data[3]);
+                                int width = int.Parse(data[4]);
+                                int height = int.Parse(data[5]);
+                                var hitbox = remoteHitboxes.Find(h => h.Id == id);
+                                if (hitbox != null)
                                 {
-                                    playerRemote = new Player(id, character, x, y, direction);
-                                    canvas.Children.Add(playerRemote.getCharacterBox());
+                                    hitbox.X = x;
+                                    hitbox.Y = y;
+                                    hitbox.Width = width;
+                                    hitbox.Height = height;
                                 }
-                                else if (id == playerRemote.getId() && !isLocal)
+                                else
                                 {
-                                    playerRemote.setPosition(x, y);
-                                    playerRemote.setAnimation(action, direction, false, true);
+                                    // Se la hitbox non esiste, aggiungine una nuova
+                                    AttackHitBox h = new AttackHitBox(name, x, y, width, height);
+                                    if(h.getAttackBox() != null)
+                                        canvas.Children.Add( h.getAttackBox());
+                                    remoteHitboxes.Add(h);
                                 }
-                            });
+                            }
                         }
+                       
                     }
                     catch (Exception ex)
                     {
@@ -200,7 +253,28 @@ namespace Fighting_Game_Client.UserControls
                 Console.WriteLine($"Errore durante l'invio dei dati: {ex.Message}");
             }
         }
+        private void SendHitboxesData()
+        {
+            try
+            {
+                string message = "hitboxes\n";
 
+                foreach (var hitbox in hitboxes)
+                {
+                    message+=hitbox.toCSV()+"\n";
+                }
+                message.Trim();
+                if (hitboxes.Count >0 && client != null)
+                {
+                    byte[] data = Encoding.ASCII.GetBytes(message);
+                    client.Send(data, data.Length, ServerSettings.Ip, (int)ServerSettings.Port);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Errore durante l'invio dei dati: {ex.Message}");
+            }
+        }
 
         private void canvas_KeyDown_1(object sender, KeyEventArgs e)
         {

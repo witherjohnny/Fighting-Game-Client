@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Fighting_Game_Client
 {
-    internal class PlayerHitBox : HitBox
+    public class PlayerHitBox : HitBox
     {
         public PlayerHitBox(string name, int x, int y, int width, int height) : base(name, x, y, width, height)
         {
         }
         public override string toCSV()
         {
-            return $"PlayerHitBox;{base.toCSV()}";
+            return $"{base.toCSV()}";
         }
         public override string ToString()
         {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Fighting_Game_Client
 {
-    internal class AttackHitBox : HitBox
+    public class AttackHitBox : HitBox
     {
         //attacks can be any time of damaging move, it can have an image or not have it, it can move.
         public int SpeedX { get; set; }
@@ -26,6 +26,10 @@ namespace Fighting_Game_Client
             SpeedY = 0;
             attackBox = new AnimationBox(characterName, animationName, x, y, width, height, direction);
         }
+        public AnimationBox getAttackBox()
+        {
+            return attackBox;
+        }
         public void setSpeed(int speedX, int speedY)
         {
             this.SpeedX = speedX;
@@ -40,7 +44,7 @@ namespace Fighting_Game_Client
         }
         public override string toCSV()
         {
-            return $"AttackHitBox;{base.toCSV()}";
+            return $"{base.toCSV()}";
         }
         public override string ToString()
         {

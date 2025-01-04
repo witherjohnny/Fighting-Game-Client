@@ -22,14 +22,15 @@ namespace Fighting_Game_Client.UserControls
     //schermata per selezionare il personaggio
     public partial class UserControlSelezionePersonaggio : UserControl
     {
-        public event Action<string> PlayClicked; // Usa un Action con un parametro stringa
+        public event EventHandler PlayClicked;
+
         private string personaggioScelto = null;
         private bool isReady = false;
-        protected virtual void OnPlayClicked(string personaggio)
+        protected virtual void OnPlayClicked()
         {
             if (PlayClicked != null)
             {
-                PlayClicked?.Invoke(personaggio);
+                PlayClicked?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -153,7 +154,7 @@ namespace Fighting_Game_Client.UserControls
                 //gestisce la risposta del server
                 if (risposta == "Gioco iniziato")
                 {
-                    OnPlayClicked(personaggio); // passa il personaggio selezionato
+                    OnPlayClicked(); // passa il personaggio selezionato
                 }
                 else
                 {
