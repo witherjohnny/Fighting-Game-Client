@@ -217,12 +217,12 @@ namespace Fighting_Game_Client.UserControls
         {
             if (playerLocal == null)
                 return;
-            if (e.Key == Key.A)  //movimento a sinistra
+            if (e.Key == Key.A)  //corsa a sinistra
             {
                 playerLocal.setAnimation("Run", Direction.Left, false, true);
                 playerLocal.SpeedX = -5;
             }
-            else if (e.Key == Key.D)  //movimento a destra
+            else if (e.Key == Key.D)  //corsa a destra
             {
                 playerLocal.SpeedX = 5;
                 playerLocal.setAnimation("Run", Direction.Right, false, true);
@@ -232,6 +232,47 @@ namespace Fighting_Game_Client.UserControls
                 playerLocal.isJumping = true;
                 playerLocal.SpeedY = 10;
                 playerLocal.setAnimation("Jump", playerLocal.getDirection(), true, true);
+            }
+
+
+            if (e.Key == Key.J)  //attacco 1    se warrior ravvicinato, se mago lontano
+            {
+                if (playerLocal.nome == "FireWizard")
+                {
+                    playerLocal.setAnimation("Fireball", playerLocal.getDirection(), true, true);
+                }
+                else if(playerLocal.nome == "Warrior_2")
+                {
+                    playerLocal.setAnimation("Attack_1", playerLocal.getDirection(), true, true);
+                }
+            }
+            
+            /*if (e.Key == Key.K)  //attacco 2 wizard flame
+            {
+                if (playerLocal.nome == "FireWizard")
+                {
+                    playerLocal.setAnimation("Flame_jet", playerLocal.getDirection(), true, true);
+                }
+                else if (playerLocal.nome == "Warrior_2")
+                {
+                    playerLocal.setAnimation("Attack_2", playerLocal.getDirection(), true, true);
+                }
+            }*/
+
+            if (e.Key == Key.LeftShift && !playerLocal.isDashing)  //dash
+            {
+                playerLocal.isDashing = true;
+                playerLocal.setAnimation("Roll", playerLocal.getDirection(), true, true);
+                //se sta andando a sinistra, dash a sinistra
+                if(playerLocal.getDirection() == Direction.Left)
+                {
+                    playerLocal.SpeedX = -5;
+                }
+                //se verso destra dash verso destra
+                else
+                {
+                    playerLocal.SpeedX = 5;
+                }
             }
         }
 

@@ -21,6 +21,9 @@ namespace Fighting_Game_Client
         private string Id { get; }
 
         public bool isJumping = false;
+
+        public bool isDashing = false;
+        private int dashCount = 0;
         public string nome { get; set; }
         private int gravita = 1;
 
@@ -35,6 +38,7 @@ namespace Fighting_Game_Client
         public Player(string id, string characterName, int startX, int startY, Direction direction)
         {
             Id = id;
+            nome=characterName;
             X = startX;
             Y = startY;
             Speed = 5;
@@ -69,6 +73,21 @@ namespace Fighting_Game_Client
             int newX = this.X + SpeedX;
             int newY = this.Y - SpeedY;
             controllaGravita(obstacles);
+            //se sta facendo il dash, si controlla a che punto è
+            if(characterBox.getCurrentAnimation() == "Roll")
+            {
+                if(this.dashCount <= 6)
+                {
+                    //è nei frame del dash, viene incrementato a ogni frame
+                    this.dashCount++;
+                }
+                else
+                {
+                    this.isDashing = false;
+                    this.SpeedX = 0;
+                    this.dashCount = 0;
+                }
+            }
             if (CheckCollisionWithTerrain(new Rect(newX, newY-1, this.characterBox.Width, this.characterBox.Height), obstacles) == null)
             {
                 this.X += SpeedX;
