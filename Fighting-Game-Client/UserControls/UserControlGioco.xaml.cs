@@ -26,12 +26,6 @@ namespace Fighting_Game_Client.UserControls
 
         private UdpClient client = UdpClientSingleton.Instance;
         private List<Rect> obstacles = new List<Rect>(); //lista di ostacoli (pavimento)
-        private bool isJumping = false; //stato del salto
-        private bool isMoving = false; //stato del movimento orizzontale
-        private bool isFalling = false; //stato per la discesa
-
-        private AttackHitBox testHitbox = new AttackHitBox("Charge", 100, 300, 120, 120, "FireWizard", "Charge", Direction.Right);
-
         public UserControlGioco(string personaggio)
         {
             InitializeComponent();
@@ -118,8 +112,7 @@ namespace Fighting_Game_Client.UserControls
 
         private void InitializeGame()
         {
-            this.Width = 800;
-            this.Height = 600;
+            
 
             obstacles = new List<Rect>
             {
@@ -172,7 +165,7 @@ namespace Fighting_Game_Client.UserControls
                             int y = int.Parse(data[3]);
                             string character = data[4];
                             Direction direction = data[5] == "Right" ? Direction.Right : Direction.Left;
-                            string action = data[6];
+                            string action = data[6].Trim();
 
                             this.Dispatcher.Invoke(() =>
                             {
@@ -186,8 +179,7 @@ namespace Fighting_Game_Client.UserControls
                                     playerRemote = new Player(id, character, x, y, direction);
                                     canvas.Children.Add(playerRemote.getCharacterBox());
                                 }
-
-                                if (id == playerRemote.getId())
+                                else if (id == playerRemote.getId() && !isLocal)
                                 {
                                     playerRemote.setPosition(x, y);
                                     playerRemote.setAnimation(action, direction, false, true);

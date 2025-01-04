@@ -20,7 +20,6 @@ namespace Fighting_Game_Client
         public int Speed { get; set; }
         private string Id { get; }
 
-        private int jumpHeight = 50;
         public bool isJumping = false;
         public string nome { get; set; }
         private int gravita = 1;
