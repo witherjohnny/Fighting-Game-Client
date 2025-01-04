@@ -7,6 +7,6 @@
              Height="100" Width="100">
 
     <Canvas x:Name="Canvas" SizeChanged="Canvas_SizeChanged">
-        <Image x:Name="AnimationImage" Width="100" Height="100" HorizontalAlignment="Center" Canvas.Top="25" VerticalAlignment="Top"/>
+        <Image x:Name="AnimationImage" Width="100" Height="100" HorizontalAlignment="Left" VerticalAlignment="Top"/>
     </Canvas>
 </UserControl>

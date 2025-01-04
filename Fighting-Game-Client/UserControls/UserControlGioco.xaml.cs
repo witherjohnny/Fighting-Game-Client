@@ -14,6 +14,7 @@ using System;
 using System.Net;
 using System.IO;
 using System.Windows.Markup;
+using System.Linq;
 
 namespace Fighting_Game_Client.UserControls
 {
@@ -121,6 +122,10 @@ namespace Fighting_Game_Client.UserControls
         {
             if(playerLocal!= null)
             {
+                if (!playerLocal.getCharacterBox().isAnimating())
+                {
+                    playerLocal.setAnimation("Idle", playerLocal.getDirection(), false, true);
+                }
                 playerLocal.Update(obstacles);
             }
             SendPlayerData();
@@ -145,10 +150,16 @@ namespace Fighting_Game_Client.UserControls
                         IPEndPoint receiveEP = new IPEndPoint(IPAddress.Any, 0);
                         byte[] dataReceived = client.Receive(ref receiveEP);
                         string serverResponse = Encoding.ASCII.GetString(dataReceived);
-                        string typeOfMessage = null;
-
+                        if(serverResponse.StartsWith("Hurt"))
+                        {
+                            playerLocal.setAnimation("Hurt", playerLocal.getDirection(), true, false);
+                        }
+                        
                         string[] allData = serverResponse.Split('\n');
-                        foreach(string riga in allData)
+
+                        List<HitBox> necessaryHitboxes = new List<HitBox>();
+                        string typeOfMessage = null;
+                        foreach (string riga in allData)
                         {
                             if(typeOfMessage == null)
                             {
@@ -195,10 +206,12 @@ namespace Fighting_Game_Client.UserControls
                                     {
                                         playerRemote.setPosition(x, y);
                                         playerRemote.setAnimation(action, direction, false, true);
+                                        progressBarVitaGiocatore2.Value = health;
                                     }
                                     else if (id == playerLocal.getId() && isLocal)
                                     {
                                         playerLocal.Health = health;
+                                        progressBarVitaGiocatore1.Value = health;
                                     }
                                 });
                             }else if(typeOfMessage == "hitboxes")
@@ -212,6 +225,7 @@ namespace Fighting_Game_Client.UserControls
                                 var hitbox = remoteHitboxes.Find(h => h.Id == id);
                                 if (hitbox != null)
                                 {
+                                    necessaryHitboxes.Add(hitbox);
                                     hitbox.X = x;
                                     hitbox.Y = y;
                                     hitbox.Width = width;
@@ -227,6 +241,7 @@ namespace Fighting_Game_Client.UserControls
                                 }
                             }
                         }
+                        removeUnnecessaryHitboxes(necessaryHitboxes);
                        
                     }
                     catch (Exception ex)
@@ -307,6 +322,35 @@ namespace Fighting_Game_Client.UserControls
                 else if(playerLocal.nome == "Warrior_2")
                 {
                     playerLocal.setAnimation("Attack_1", playerLocal.getDirection(), true, true);
+                    // Create a new hitbox for the attack
+                    int hitboxX = playerLocal.X + (playerLocal.getDirection() == Direction.Right ? 50 : -50);
+                    int hitboxY = playerLocal.Y + 10;
+                    int hitboxWidth = 50;
+                    int hitboxHeight = 20;
+
+                    AttackHitBox hitbox = new AttackHitBox("Attack_1", hitboxX, hitboxY, hitboxWidth, hitboxHeight);
+                    Canvas.SetLeft(hitbox.getAttackBox(), hitboxX);
+                    Canvas.SetTop(hitbox.getAttackBox(), hitboxY);
+                    // Add hitbox to the canvas
+                    if (hitbox.getAttackBox() != null)
+                        canvas.Children.Add(hitbox.getAttackBox());
+
+                    // Add hitbox to the local list
+                    hitboxes.Add(hitbox);
+
+                    // Remove the hitbox after a delay (e.g., 500ms)
+                    Task.Delay(500).ContinueWith(_ =>
+                    {
+                        this.Dispatcher.Invoke(() =>
+                        {
+                            // Remove from canvas
+                            if (hitbox.getAttackBox() != null)
+                                canvas.Children.Remove(hitbox.getAttackBox());
+
+                            // Remove from the hitbox list
+                            hitboxes.Remove(hitbox);
+                        });
+                    });
                 }
             }
             
@@ -348,6 +392,34 @@ namespace Fighting_Game_Client.UserControls
                 playerLocal.SpeedX = 0;
                 playerLocal.setAnimation("Idle", playerLocal.getDirection(), false, true);
 
+            }
+        }
+        private void removeUnnecessaryHitboxes(List<HitBox> hitboxes)
+        {
+            // Crea un elenco temporaneo per raccogliere le hitbox da rimuovere
+            List<AttackHitBox> hitboxesToRemove = new List<AttackHitBox>();
+
+            foreach (var remoteHitbox in remoteHitboxes)
+            {
+                // Se la hitbox remota non è contenuta nella lista delle hitbox passate
+                if (!hitboxes.Any(h => h.Id == remoteHitbox.Id))
+                {
+                    // Aggiungi la hitbox remota all'elenco delle hitbox da rimuovere
+                    hitboxesToRemove.Add((AttackHitBox)remoteHitbox);
+                }
+            }
+
+            // Rimuovi dal canvas e dalla lista remoteHitboxes le hitbox non necessarie
+            foreach (var hitboxToRemove in hitboxesToRemove)
+            {
+                // Se la hitbox ha un elemento grafico associato, rimuovilo dal canvas
+                if (hitboxToRemove.getAttackBox() != null)
+                {
+                    canvas.Children.Remove(hitboxToRemove.getAttackBox());
+                }
+
+                // Rimuovi la hitbox dalla lista remoteHitboxes
+                remoteHitboxes.Remove(hitboxToRemove);
             }
         }
     }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Fighting_Game_Client
 {
@@ -18,7 +19,8 @@ namespace Fighting_Game_Client
         {
             SpeedX = 0;
             SpeedY = 0;
-            attackBox = null;
+            attackBox = new AnimationBox();
+            attackBox.Background = new SolidColorBrush(Color.FromArgb(30, 255, 0, 0));
         }
         public AttackHitBox(string name, int x, int y, int width, int height, string characterName, string animationName, Direction direction) : base(name, x, y, width, height)
         {

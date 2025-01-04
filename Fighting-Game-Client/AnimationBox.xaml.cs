@@ -25,7 +25,12 @@ namespace Fighting_Game_Client
         private bool runOnce; //se false continuera a fare la stessa animazione, ma puo cambiare animazione in qualsiasi momento. se true cicla una volta e ritorna ad idle
         private bool isCancelable; //finche l'animazione corrente non ha finito non puo cambiare animazione
         private Direction direction;
+        private bool animating;
         private static readonly object _lock = new object();
+        public AnimationBox()
+        {
+            InitializeComponent();
+        }
         public AnimationBox(string personaggio, string startingAnimation, int x, int y, double width, double height, Direction direction)
         {
             InitializeComponent();
@@ -37,6 +42,7 @@ namespace Fighting_Game_Client
             this.runOnce = false;
             this.isCancelable = true;
             this.direction = direction;
+            this.animating = false;
             setPosition(x, y);
             //imposta il timer per l'animazione
             animationTimer = new System.Windows.Threading.DispatcherTimer();
@@ -69,7 +75,7 @@ namespace Fighting_Game_Client
 
                         this.runOnce = false;
                         this.isCancelable = true;
-                        setAnimation("Idle", this.direction, false, true);
+                        StopAnimation();
                         return;
                     }
                 }
@@ -173,11 +179,15 @@ namespace Fighting_Game_Client
                 throw new Exception($"Errore durante il caricamento dei frame dalla cartella '{spriteFolderPath}': {ex.Message}");
             }
         }
-
+        public bool isAnimating()
+        {
+            return this.animating;
+        }
         public void StartAnimation()
         {
             if (animationTimer != null && !animationTimer.IsEnabled)
             {
+                animating = true;
                 animationTimer.Start();
             }
         }
@@ -186,6 +196,7 @@ namespace Fighting_Game_Client
         {
             if (animationTimer != null && animationTimer.IsEnabled)
             {
+                animating = false;
                 animationTimer.Stop();
             }
         }
