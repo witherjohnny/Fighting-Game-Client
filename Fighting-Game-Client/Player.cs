@@ -26,12 +26,10 @@ namespace Fighting_Game_Client
         private int gravita = 1;
 
         private AnimationBox characterBox;
-        private Direction currentDirection; //direzione corrente
 
         public Player()
         {
             characterBox = null;
-            currentDirection = Direction.Right;
             Speed = 5; //velocità predefinita
         }
 
@@ -63,7 +61,7 @@ namespace Fighting_Game_Client
 
         public Direction getDirection()
         {
-            return currentDirection;
+            return characterBox.getDirection();
         }
 
         //fa movimento se non c'è collisione
@@ -71,33 +69,35 @@ namespace Fighting_Game_Client
         {
             int newX = this.X + SpeedX;
             int newY = this.Y - SpeedY;
-            controllaGravita(new Rect(newX, newY, this.characterBox.Width, this.characterBox.Height), obstacles);
-            if (!CheckCollisionWithTerrain(new Rect(newX, newY, this.characterBox.Width, this.characterBox.Height), obstacles))
+            controllaGravita(obstacles);
+            if (CheckCollisionWithTerrain(new Rect(newX, newY, this.characterBox.Width, this.characterBox.Height), obstacles) == null)
             {
                 this.X += SpeedX;
                 this.Y -= SpeedY;
                 if (this.characterBox != null)
-                    this.characterBox.setPosition(newX, newY);
+                    this.characterBox.setPosition(X, Y);
             }
+
         }
 
-        //controllo collisione
-        private bool CheckCollisionWithTerrain(Rect playerBox, List<Rect> obstacles)
+        private Rect? CheckCollisionWithTerrain(Rect playerBox, List<Rect> obstacles)
         {
             foreach (var terrain in obstacles)
             {
                 if (playerBox.IntersectsWith(terrain))
                 {
-                    return true;
+                    return terrain;
                 }
             }
-            return false;
+            return null;
         }
 
-        private void controllaGravita(Rect playerBox, List<Rect> obstacles)
+        private void controllaGravita( List<Rect> obstacles)
         {
-            if(CheckCollisionWithTerrain(playerBox, obstacles))//atterrato
+            Rect? collidedWith = CheckCollisionWithTerrain(new Rect(X, Y - SpeedY, characterBox.Width, characterBox.Height), obstacles);
+            if (collidedWith!= null)//atterrato
             {
+                this.Y =(int)(collidedWith.Value.Y - characterBox.Height)-1;
                 this.isJumping = false;
                 this.SpeedY = 0;
             }

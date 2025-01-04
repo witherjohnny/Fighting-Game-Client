@@ -97,8 +97,8 @@ namespace Fighting_Game_Client
                 BitmapImage currentImage = frames[currentFrame];
                 AnimationImage.Source = currentImage;
 
-                if(direction == Direction.Left)
-                    FlipImage(this.direction); 
+               
+                FlipImage(this.direction);
             }
         }
         private void FlipImage(Direction direction)
@@ -123,15 +123,18 @@ namespace Fighting_Game_Client
             {
                 if (CharactersData.animationExists(this.personaggio, animation))
                 {
-                    if (this.isCancelable)
+                    if(animation != this.currentAnimation || direction != this.direction)
                     {
-                        this.direction = direction;
-                        this.currentAnimation = animation;
-                        this.runOnce = runOnce;
-                        this.isCancelable = isCancelable;
-                        LoadFrames($"Images/Sprites/{this.personaggio}/{this.currentAnimation}");
-                        StartAnimation();
+                        if (this.isCancelable)
+                        {
+                            this.direction = direction;
+                            this.currentAnimation = animation;
+                            this.runOnce = runOnce;
+                            this.isCancelable = isCancelable;
+                            LoadFrames($"Images/Sprites/{this.personaggio}/{this.currentAnimation}");
+                            StartAnimation();
 
+                        }
                     }
                 }
             }

@@ -202,58 +202,17 @@ namespace Fighting_Game_Client.UserControls
             {
                 if (playerLocal != null && client != null)
                 {
-                    string message = $"playerInfo;{playerLocal.X};playerLocal.Y;playerLocal.getCharacterBox().getDirection();playerLocal.getCharacterBox().getCurrentAnimation()";
+                    string message = $"playerInfo;{playerLocal.X};{playerLocal.Y};{playerLocal.getCharacterBox().getDirection()};{playerLocal.getCharacterBox().getCurrentAnimation()}";
                     byte[] data = Encoding.ASCII.GetBytes(message);
                     client.Send(data, data.Length, ServerSettings.Ip, (int)ServerSettings.Port);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Errore durante l'invio dei dati: {ex.Message}");
+                Console.WriteLine($"Errore durante l'invio dei dati: {ex.Message}");
             }
         }
 
-        private bool CheckCollisionWithTerrain(Rect playerBox)
-        {
-            foreach (var terrain in obstacles)
-            {
-                if (playerBox.IntersectsWith(terrain))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private void HandleJump()
-        {
-            if (playerLocal.Y > 300)
-            {
-                playerLocal.Y -= 5; //salita durante il salto
-                playerLocal.setAnimation("Jump", playerLocal.getCharacterBox().getDirection(), false, true);
-            }
-
-            else
-            {
-                isJumping = false;
-                isFalling = true;
-                playerLocal.setAnimation("Fall", playerLocal.getCharacterBox().getDirection(), false, true);
-            }
-        }
-
-        private void HandleFall()
-        {
-            if (playerLocal.Y < 550)
-            {
-                playerLocal.Y += 5;  //discesa con gravità
-            }
-            else
-            {
-                playerLocal.Y = 550; //allinea al terreno
-                isFalling = false;
-                playerLocal.setAnimation("Idle", playerLocal.getCharacterBox().getDirection(), true, true); //torna in Idle
-            }
-        }
 
         private void canvas_KeyDown_1(object sender, KeyEventArgs e)
         {
@@ -267,11 +226,11 @@ namespace Fighting_Game_Client.UserControls
                 playerLocal.SpeedX = 5;
                 playerLocal.setAnimation("Run", Direction.Right, false, true);
             }
-            else if (e.Key == Key.W && !playerLocal.isJumping)  //salto
+            if (e.Key == Key.W && !playerLocal.isJumping)  //salto
             {
                 playerLocal.isJumping = true;
-                playerLocal.SpeedY = 5;
-                playerLocal.setAnimation("Jump", playerLocal.getDirection(), false, true);
+                playerLocal.SpeedY = 10;
+                playerLocal.setAnimation("Jump", playerLocal.getDirection(), true, true);
             }
         }
 
@@ -279,12 +238,9 @@ namespace Fighting_Game_Client.UserControls
         {
             if (e.Key == Key.A || e.Key == Key.D)
             {
-                testHitbox.SpeedX = 0;
-            }
+                playerLocal.SpeedX = 0;
+                playerLocal.setAnimation("Idle", playerLocal.getDirection(), false, true);
 
-            if (e.Key == Key.S || e.Key == Key.W)
-            {
-                testHitbox.SpeedY = 0;
             }
         }
     }
