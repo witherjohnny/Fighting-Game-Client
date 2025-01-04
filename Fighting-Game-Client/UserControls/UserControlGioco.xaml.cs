@@ -60,65 +60,54 @@ namespace Fighting_Game_Client.UserControls
 
         private void disegnaPavimento()
         {
-            //percorso dell'immagine di sfondo del pavimento
+            // Percorso dell'immagine di sfondo del pavimento
             string immaginePavimento = System.IO.Path.Combine("Images", "Floor", "pavimento1.png");
 
-            //verifica se il file esiste
+            // Verifica se il file esiste
             if (!File.Exists(immaginePavimento))
             {
                 MessageBox.Show($"Immagine del pavimento non trovata: {immaginePavimento}", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            //numero fisso di blocchi
-            int numeroBlocchiPavimento = 6;
-            int larghezzaBlocco = 150;       //larghezza fissa di ciascun blocco
-            int altezzaBlocco = 100;         //altezza fissa del pavimento
-            int yPavimento = (int)(this.ActualHeight - altezzaBlocco);  //posizione verticale del pavimento (in fondo alla finestra)
+            // Dimensioni del pavimento
+            int larghezzaPavimento = (int)(this.ActualWidth * 0.6); // Larghezza del pavimento: 60% della larghezza totale
+            int altezzaPavimento = 141; // Altezza fissa del pavimento
+            int yPavimento = (int)(this.ActualHeight - altezzaPavimento - 50); // Posizione verticale (in fondo alla finestra)
+            int xPavimento = (int)((this.ActualWidth - larghezzaPavimento) / 2); // Posizione orizzontale centrata
 
-            //crea l'immagine del pavimento
+            // Crea l'immagine del pavimento come un unico blocco
+            Image pavimento = new Image
+            {
+                Width = larghezzaPavimento,  // Larghezza del pavimento
+                Height = altezzaPavimento,  // Altezza del pavimento
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Stretch = Stretch.Fill // Ridimensiona l'immagine per coprire tutto il blocco
+            };
+
+            // Carica l'immagine del pavimento
             BitmapImage bitmap = new BitmapImage();
             bitmap.BeginInit();
             bitmap.UriSource = new Uri(immaginePavimento, UriKind.RelativeOrAbsolute);
             bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.EndInit();
 
-            //calcola lo spazio vuoto ai lati
-            int spazioLato = (int)((this.ActualWidth - (numeroBlocchiPavimento * larghezzaBlocco)) / 2);
+            pavimento.Source = bitmap;
 
-            //aggiungi i blocchi del pavimento uno accanto all'altro
-            for (int i = 0; i < numeroBlocchiPavimento; i++)
-            {
-                Image floorBlock = new Image
-                {
-                    Width = larghezzaBlocco,  //imposta la larghezza del blocco
-                    Height = altezzaBlocco,   //imposta l'altezza del blocco
-                    Source = bitmap,
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    VerticalAlignment = VerticalAlignment.Top
-                };
+            // Posiziona l'immagine del pavimento sul Canvas
+            Canvas.SetLeft(pavimento, xPavimento); // Posiziona il pavimento centrato orizzontalmente
+            Canvas.SetTop(pavimento, yPavimento); // Posizione verticale (in basso)
 
-                //posizione X di ciascun blocco (spazio vuoto a sinistra e posizionamento dei blocchi)
-                Canvas.SetLeft(floorBlock, spazioLato + i * larghezzaBlocco);
+            // Aggiungi il pavimento al Canvas
+            canvas.Children.Add(pavimento);
 
-                //posizione Y fissa (il pavimento è sempre in fondo alla finestra)
-                Canvas.SetTop(floorBlock, yPavimento);
-
-                //aggiungi ogni blocco al Canvas
-                canvas.Children.Add(floorBlock);
-            }
-            obstacles.Add(new Rect(0, 550, 800, 50));
+            // Aggiungi l'ostacolo solo per l'area del pavimento
+            obstacles.Add(new Rect(xPavimento, yPavimento, larghezzaPavimento, altezzaPavimento));
         }
 
         private void InitializeGame()
         {
-            
-
-            obstacles = new List<Rect>
-            {
-                new Rect(0, 550, 800, 50) //pavimento (ostacolo)
-            };
-
             System.Windows.Threading.DispatcherTimer gameTimer = new System.Windows.Threading.DispatcherTimer
             {
                 Interval = TimeSpan.FromMilliseconds(1000 / FrameRate)
