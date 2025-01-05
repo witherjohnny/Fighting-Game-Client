@@ -297,49 +297,33 @@ namespace Fighting_Game_Client.UserControls
         {
             if (playerLocal == null)
                 return;
-            if (e.Key == Key.A)  //corsa a sinistra
+
+            //MOVIMENTO
+            //corsa a sinistra
+            if (e.Key == Key.A)  
             {
                 playerLocal.setAnimation("Run", Direction.Left, false, true);
                 playerLocal.SpeedX = -5;
             }
-            else if (e.Key == Key.D)  //corsa a destra
+
+            //corsa a destra
+            else if (e.Key == Key.D)
             {
                 playerLocal.SpeedX = 5;
                 playerLocal.setAnimation("Run", Direction.Right, false, true);
             }
-            if (e.Key == Key.W && !playerLocal.isJumping)  //salto
+
+            //salto
+            if (e.Key == Key.W && !playerLocal.isJumping) 
             {
                 playerLocal.isJumping = true;
                 playerLocal.SpeedY = 10;
                 playerLocal.setAnimation("Jump", playerLocal.getDirection(), true, true);
             }
 
-
-            if (e.Key == Key.J)  //attacco 1    se warrior ravvicinato, se mago lontano
-            {
-                if (playerLocal.nome == "FireWizard")
-                {
-                    HandleFireballAttack();
-                }
-                else if(playerLocal.nome == "Warrior_2")
-                {
-                    HandleAttack1();
-                }
-            }
-
-            /*if (e.Key == Key.K)  //attacco 2 wizard flame
-            {
-                if (playerLocal.nome == "FireWizard")
-                {
-                    playerLocal.setAnimation("Flame_jet", playerLocal.getDirection(), true, true);
-                }
-                else if (playerLocal.nome == "Warrior_2")
-                {
-                    playerLocal.setAnimation("Attack_2", playerLocal.getDirection(), true, true);
-                }
-            }*/
-
-            if (e.Key == Key.LeftShift && !playerLocal.isDashing)  //se premi Shift e non sei già in dash
+            //dash
+            //se premi Shift e non sei già in dash
+            if (e.Key == Key.LeftShift && !playerLocal.isDashing)
             {
                 playerLocal.isDashing = true;  //abilita il dash
                 playerLocal.setAnimation("Roll", playerLocal.getDirection(), true, true);  //attiva l'animazione del dash
@@ -356,6 +340,37 @@ namespace Fighting_Game_Client.UserControls
                 }
             }
 
+
+
+            //ATTACCO
+            //attacco 1    se warrior ravvicinato, se mago FIREBALL
+            if (e.Key == Key.J)  
+            {
+                if (playerLocal.nome == "FireWizard")
+                {
+                    HandleFireballAttack();
+                }
+                else if(playerLocal.nome == "Warrior_2")
+                {
+                    HandleAttack1();
+                }
+            }
+
+            //attacco 2    se warrior ravvicinato, se mago JET FLAME
+            if (e.Key == Key.K) 
+            {
+                if (playerLocal.nome == "FireWizard")
+                {
+                    //da cambiare se si vuole aggiungere flame jet, ma sprite player e attacco sono insieme
+                    HandleAttack2();
+                }
+                else if (playerLocal.nome == "Warrior_2")
+                {
+                    HandleAttack2();
+                }
+            }
+
+            
         }
 
         private void HandleAttack1()
@@ -397,14 +412,53 @@ namespace Fighting_Game_Client.UserControls
             });
         }
 
+        private void HandleAttack2()
+        {
+            playerLocal.setAnimation("Attack_2", playerLocal.getDirection(), true, true);
+            // Create a new hitbox for the attack
+            int hitboxX = playerLocal.X + (playerLocal.getDirection() == Direction.Right ? 50 : -50);
+            int hitboxY = playerLocal.Y + 10;
+            int hitboxWidth = 50;
+            int hitboxHeight = 20;
+
+            AttackHitBox hitbox = new AttackHitBox("Attack_2", hitboxX, hitboxY, hitboxWidth, hitboxHeight);
+            Canvas.SetLeft(hitbox.getAttackBox(), hitboxX);
+            Canvas.SetTop(hitbox.getAttackBox(), hitboxY);
+            // Add hitbox to the canvas
+            if (hitbox.getAttackBox() != null)
+                canvas.Children.Add(hitbox.getAttackBox());
+
+            // Add hitbox to the local list
+            hitboxes.Add(hitbox);
+
+            // Remove the hitbox after a delay 
+            Task.Delay(100).ContinueWith(_ =>
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    // Remove from canvas
+                    if (hitbox.getAttackBox() != null)
+                        canvas.Children.Remove(hitbox.getAttackBox());
+
+                    // Remove from the hitbox list
+                    hitboxes.Remove(hitbox);
+
+                    UdpClient udpClient = UdpClientSingleton.Instance;
+                    string messaggio = "removeHitbox;" + hitbox.Id;
+                    byte[] bytes = Encoding.ASCII.GetBytes(messaggio);
+                    udpClient.Send(bytes, bytes.Length, ServerSettings.Ip, (int)ServerSettings.Port);
+                });
+            });
+        }
+
         private void HandleFireballAttack()
         {
             playerLocal.setAnimation("Fireball", playerLocal.getDirection(), true, true);
             // Create a new hitbox for the attack
-            int hitboxX = playerLocal.X + (playerLocal.getDirection() == Direction.Right ? 50 : -50);
+            int hitboxX = playerLocal.X + (playerLocal.getDirection() == Direction.Right ? 5 : -5);
             int hitboxY = playerLocal.Y + 10;
-            int hitboxWidth = 20;
-            int hitboxHeight = 20;
+            int hitboxWidth = 5;
+            int hitboxHeight = 5;
 
             AttackHitBox hitbox = new AttackHitBox("Charge", hitboxX, hitboxY, hitboxWidth, hitboxHeight);
             Canvas.SetLeft(hitbox.getAttackBox(), hitboxX);
@@ -419,7 +473,7 @@ namespace Fighting_Game_Client.UserControls
 
 
             //direzione di movimento (indipendente dal player dopo il lancio)
-            int fireballSpeed = 10 * (playerLocal.getDirection() == Direction.Right ? 10 : -10);
+            int fireballSpeed = 10 * (playerLocal.getDirection() == Direction.Right ? 2 : -2);
 
             //muovi la fireball per i frame dell'animazione
             int framesRemaining = 6;
@@ -458,7 +512,6 @@ namespace Fighting_Game_Client.UserControls
                 });
             });
         }
-
 
         private void canvas_KeyUp_1(object sender, KeyEventArgs e)
         {

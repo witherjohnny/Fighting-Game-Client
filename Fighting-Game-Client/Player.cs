@@ -23,7 +23,6 @@ namespace Fighting_Game_Client
         public bool isJumping = false;
 
         public bool isDashing = false;
-        private int dashCount = 0;
         public string nome { get; set; }
         private int gravita = 1;
 
@@ -85,15 +84,12 @@ namespace Fighting_Game_Client
                 {
                     //il movimento viene applicato ad ogni frame mentre l'animazione è attiva
                     //la velocità di spostamento è già impostata, quindi continua il movimento
-                    //incrementa il contatore del dash per tener traccia dei frame del dash
-                    this.dashCount++;
                 }
                 else
                 {
                     //fine dell'animazione del dash
                     this.isDashing = false;  //disabilita il dash
                     this.SpeedX = 0;  //ferma il movimento orizzontale
-                    this.dashCount = 0;  //reset del contatore del dash
                 }
             }
 
