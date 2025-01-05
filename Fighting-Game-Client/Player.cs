@@ -76,21 +76,28 @@ namespace Fighting_Game_Client
             int newX = this.X + SpeedX;
             int newY = this.Y - SpeedY;
             controllaGravita(obstacles);
-            //se sta facendo il dash, si controlla a che punto è
-            if(characterBox.getCurrentAnimation() == "Roll")
+
+            //se il personaggio sta facendo il dash
+            if (this.isDashing)
             {
-                if(this.dashCount <= 6)
+                //verifica se l'animazione del dash è ancora in corso
+                if (this.characterBox.getCurrentAnimation() == "Roll")
                 {
-                    //è nei frame del dash, viene incrementato a ogni frame
+                    //il movimento viene applicato ad ogni frame mentre l'animazione è attiva
+                    //la velocità di spostamento è già impostata, quindi continua il movimento
+                    //incrementa il contatore del dash per tener traccia dei frame del dash
                     this.dashCount++;
                 }
                 else
                 {
-                    this.isDashing = false;
-                    this.SpeedX = 0;
-                    this.dashCount = 0;
+                    //fine dell'animazione del dash
+                    this.isDashing = false;  //disabilita il dash
+                    this.SpeedX = 0;  //ferma il movimento orizzontale
+                    this.dashCount = 0;  //reset del contatore del dash
                 }
             }
+
+            //verifica la collisione con il terreno
             if (CheckCollisionWithTerrain(new Rect(newX, newY-1, this.characterBox.Width, this.characterBox.Height), obstacles) == null)
             {
                 this.X += SpeedX;

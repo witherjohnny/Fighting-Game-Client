@@ -132,7 +132,6 @@ namespace Fighting_Game_Client.UserControls
             }
             SendPlayerData();
             SendHitboxesData();
-
         }
 
 
@@ -320,48 +319,14 @@ namespace Fighting_Game_Client.UserControls
             {
                 if (playerLocal.nome == "FireWizard")
                 {
-                    playerLocal.setAnimation("Fireball", playerLocal.getDirection(), true, true);
+                    HandleFireballAttack();
                 }
                 else if(playerLocal.nome == "Warrior_2")
                 {
-                    playerLocal.setAnimation("Attack_1", playerLocal.getDirection(), true, true);
-                    // Create a new hitbox for the attack
-                    int hitboxX = playerLocal.X + (playerLocal.getDirection() == Direction.Right ? 50 : -50);
-                    int hitboxY = playerLocal.Y + 10;
-                    int hitboxWidth = 50;
-                    int hitboxHeight = 20;
-
-                    AttackHitBox hitbox = new AttackHitBox("Attack_1", hitboxX, hitboxY, hitboxWidth, hitboxHeight);
-                    Canvas.SetLeft(hitbox.getAttackBox(), hitboxX);
-                    Canvas.SetTop(hitbox.getAttackBox(), hitboxY);
-                    // Add hitbox to the canvas
-                    if (hitbox.getAttackBox() != null)
-                        canvas.Children.Add(hitbox.getAttackBox());
-
-                    // Add hitbox to the local list
-                    hitboxes.Add(hitbox);
-
-                    // Remove the hitbox after a delay 
-                    Task.Delay(100).ContinueWith(_ =>
-                    {
-                        this.Dispatcher.Invoke(() =>
-                        {
-                            // Remove from canvas
-                            if (hitbox.getAttackBox() != null)
-                                canvas.Children.Remove(hitbox.getAttackBox());
-
-                            // Remove from the hitbox list
-                            hitboxes.Remove(hitbox);
-
-                            UdpClient udpClient = UdpClientSingleton.Instance;
-                            string messaggio = "removeHitbox;"+hitbox.Id;
-                            byte[] bytes = Encoding.ASCII.GetBytes(messaggio);
-                            udpClient.Send(bytes, bytes.Length, ServerSettings.Ip, (int)ServerSettings.Port);
-                        });
-                    });
+                    HandleAttack1();
                 }
             }
-            
+
             /*if (e.Key == Key.K)  //attacco 2 wizard flame
             {
                 if (playerLocal.nome == "FireWizard")
@@ -374,23 +339,126 @@ namespace Fighting_Game_Client.UserControls
                 }
             }*/
 
-            if (e.Key == Key.LeftShift && !playerLocal.isDashing)  //dash
+            if (e.Key == Key.LeftShift && !playerLocal.isDashing)  //se premi Shift e non sei già in dash
             {
-                playerLocal.isDashing = true;
-                playerLocal.setAnimation("Roll", playerLocal.getDirection(), true, true);
+                playerLocal.isDashing = true;  //abilita il dash
+                playerLocal.setAnimation("Roll", playerLocal.getDirection(), true, true);  //attiva l'animazione del dash
+
                 //se sta andando a sinistra, dash a sinistra
-                if(playerLocal.getDirection() == Direction.Left)
+                if (playerLocal.getDirection() == Direction.Left)
                 {
-                    playerLocal.SpeedX = -5;
+                    playerLocal.SpeedX = -10;  //velocità del dash verso sinistra
                 }
-                //se verso destra dash verso destra
+                //se sta andando a destra, dash verso destra
                 else
                 {
-                    playerLocal.SpeedX = 5;
+                    playerLocal.SpeedX = 10;  //velocità del dash verso destra
                 }
             }
 
         }
+
+        private void HandleAttack1()
+        {
+            playerLocal.setAnimation("Attack_1", playerLocal.getDirection(), true, true);
+            // Create a new hitbox for the attack
+            int hitboxX = playerLocal.X + (playerLocal.getDirection() == Direction.Right ? 50 : -50);
+            int hitboxY = playerLocal.Y + 10;
+            int hitboxWidth = 50;
+            int hitboxHeight = 20;
+
+            AttackHitBox hitbox = new AttackHitBox("Attack_1", hitboxX, hitboxY, hitboxWidth, hitboxHeight);
+            Canvas.SetLeft(hitbox.getAttackBox(), hitboxX);
+            Canvas.SetTop(hitbox.getAttackBox(), hitboxY);
+            // Add hitbox to the canvas
+            if (hitbox.getAttackBox() != null)
+                canvas.Children.Add(hitbox.getAttackBox());
+
+            // Add hitbox to the local list
+            hitboxes.Add(hitbox);
+
+            // Remove the hitbox after a delay 
+            Task.Delay(100).ContinueWith(_ =>
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    // Remove from canvas
+                    if (hitbox.getAttackBox() != null)
+                        canvas.Children.Remove(hitbox.getAttackBox());
+
+                    // Remove from the hitbox list
+                    hitboxes.Remove(hitbox);
+
+                    UdpClient udpClient = UdpClientSingleton.Instance;
+                    string messaggio = "removeHitbox;" + hitbox.Id;
+                    byte[] bytes = Encoding.ASCII.GetBytes(messaggio);
+                    udpClient.Send(bytes, bytes.Length, ServerSettings.Ip, (int)ServerSettings.Port);
+                });
+            });
+        }
+
+        private void HandleFireballAttack()
+        {
+            playerLocal.setAnimation("Fireball", playerLocal.getDirection(), true, true);
+            // Create a new hitbox for the attack
+            int hitboxX = playerLocal.X + (playerLocal.getDirection() == Direction.Right ? 50 : -50);
+            int hitboxY = playerLocal.Y + 10;
+            int hitboxWidth = 20;
+            int hitboxHeight = 20;
+
+            AttackHitBox hitbox = new AttackHitBox("Charge", hitboxX, hitboxY, hitboxWidth, hitboxHeight);
+            Canvas.SetLeft(hitbox.getAttackBox(), hitboxX);
+            Canvas.SetTop(hitbox.getAttackBox(), hitboxY);
+
+            // Add hitbox to the canvas
+            if (hitbox.getAttackBox() != null)
+                canvas.Children.Add(hitbox.getAttackBox());
+
+            // Add hitbox to the local list
+            hitboxes.Add(hitbox);
+
+
+            //direzione di movimento (indipendente dal player dopo il lancio)
+            int fireballSpeed = 10 * (playerLocal.getDirection() == Direction.Right ? 10 : -10);
+
+            //muovi la fireball per i frame dell'animazione
+            int framesRemaining = 6;
+            Task.Run(async () =>
+            {
+                while (framesRemaining > 0)
+                {
+                    await Task.Delay(100); //100ms per frame
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        //aggiorna la posizione della fireball
+                        hitbox.X += fireballSpeed;
+
+                        //aggiorna la posizione nella canvas
+                        Canvas.SetLeft(hitbox.getAttackBox(), hitbox.X);
+                        Canvas.SetTop(hitbox.getAttackBox(), hitbox.Y);
+
+                        //riduci i frame rimanenti
+                        framesRemaining--;
+                    });
+                }
+
+                //dopo 6 frame, rimuovi la fireball
+                this.Dispatcher.Invoke(() =>
+                {
+                    if (hitbox.getAttackBox() != null)
+                        canvas.Children.Remove(hitbox.getAttackBox());
+
+                    hitboxes.Remove(hitbox);
+
+                    //comunica la rimozione della fireball al server
+                    UdpClient udpClient = UdpClientSingleton.Instance;
+                    string messaggio = "removeHitbox;" + hitbox.Id;
+                    byte[] bytes = Encoding.ASCII.GetBytes(messaggio);
+                    udpClient.Send(bytes, bytes.Length, ServerSettings.Ip, (int)ServerSettings.Port);
+                });
+            });
+        }
+
 
         private void canvas_KeyUp_1(object sender, KeyEventArgs e)
         {
