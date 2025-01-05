@@ -15,6 +15,7 @@ using System.Net;
 using System.IO;
 using System.Windows.Markup;
 using System.Linq;
+using System.Threading;
 
 namespace Fighting_Game_Client.UserControls
 {
@@ -28,7 +29,8 @@ namespace Fighting_Game_Client.UserControls
         private UdpClient client = UdpClientSingleton.Instance;
         private List<Rect> obstacles = new List<Rect>(); //lista di ostacoli (pavimento)
         private List<HitBox> hitboxes = new List<HitBox>(); 
-        private List<HitBox> remoteHitboxes = new List<HitBox>(); 
+        private List<HitBox> remoteHitboxes = new List<HitBox>();
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         public UserControlGioco()
         {
             InitializeComponent();
@@ -130,6 +132,7 @@ namespace Fighting_Game_Client.UserControls
             }
             SendPlayerData();
             SendHitboxesData();
+
         }
 
 
@@ -143,7 +146,7 @@ namespace Fighting_Game_Client.UserControls
             udpClient.Send(bytes, bytes.Length, ServerSettings.Ip, (int)ServerSettings.Port);
             await Task.Run(() =>
             {
-                while (true)
+                while (!_cancellationTokenSource.Token.IsCancellationRequested)
                 {
                     try
                     {
@@ -338,8 +341,8 @@ namespace Fighting_Game_Client.UserControls
                     // Add hitbox to the local list
                     hitboxes.Add(hitbox);
 
-                    // Remove the hitbox after a delay (e.g., 500ms)
-                    Task.Delay(500).ContinueWith(_ =>
+                    // Remove the hitbox after a delay 
+                    Task.Delay(100).ContinueWith(_ =>
                     {
                         this.Dispatcher.Invoke(() =>
                         {
@@ -349,6 +352,11 @@ namespace Fighting_Game_Client.UserControls
 
                             // Remove from the hitbox list
                             hitboxes.Remove(hitbox);
+
+                            UdpClient udpClient = UdpClientSingleton.Instance;
+                            string messaggio = "removeHitbox;"+hitbox.Id;
+                            byte[] bytes = Encoding.ASCII.GetBytes(messaggio);
+                            udpClient.Send(bytes, bytes.Length, ServerSettings.Ip, (int)ServerSettings.Port);
                         });
                     });
                 }
@@ -381,6 +389,7 @@ namespace Fighting_Game_Client.UserControls
                     playerLocal.SpeedX = 5;
                 }
             }
+
         }
 
         private void canvas_KeyUp_1(object sender, KeyEventArgs e)
@@ -421,6 +430,17 @@ namespace Fighting_Game_Client.UserControls
                 // Rimuovi la hitbox dalla lista remoteHitboxes
                 remoteHitboxes.Remove(hitboxToRemove);
             }
+        }
+
+        private void Grid_Unloaded(object sender, RoutedEventArgs e)
+        {
+            
+
+            // Cancel the token to stop the task
+            _cancellationTokenSource.Cancel();
+
+            // Dispose of the UdpClient if needed
+            client?.Close();
         }
     }
 }

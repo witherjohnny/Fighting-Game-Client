@@ -60,36 +60,44 @@ namespace Fighting_Game_Client
         {
             lock (_lock)
             {
-                if (frames.Count == 0)
+                try
                 {
-                    animationTimer.Stop();
-                    return;
-                }
-
-                if (runOnce)
-                {
-                    this.currentFrame++;
-                    if (this.currentFrame == frames.Count)
+                    if (frames.Count == 0)
                     {
-
-
-                        this.runOnce = false;
-                        this.isCancelable = true;
-                        StopAnimation();
+                        animationTimer.Stop();
                         return;
                     }
+
+                    if (runOnce)
+                    {
+                        this.currentFrame++;
+                        if (this.currentFrame == frames.Count)
+                        {
+
+
+                            this.runOnce = false;
+                            this.isCancelable = true;
+                            StopAnimation();
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        this.currentFrame = (this.currentFrame + 1) % frames.Count;
+                    }
+
+                    // Get the current frame and flip it if direction is Left
+                    BitmapImage currentImage = frames[currentFrame];
+                    AnimationImage.Source = currentImage;
+
+
+                    FlipImage(this.direction);
                 }
-                else
+                catch(Exception ex)
                 {
-                    this.currentFrame = (this.currentFrame + 1) % frames.Count;
+                    Console.WriteLine(ex.ToString());
                 }
-
-                // Get the current frame and flip it if direction is Left
-                BitmapImage currentImage = frames[currentFrame];
-                AnimationImage.Source = currentImage;
-
-               
-                FlipImage(this.direction);
+                
             }
         }
         private void FlipImage(Direction direction)
