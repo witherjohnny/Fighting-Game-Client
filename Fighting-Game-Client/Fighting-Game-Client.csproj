@@ -64,6 +64,9 @@
     <Compile Include="Data\ServerSettings.cs" />
     <Compile Include="Data\UdpClientSingleton.cs" />
     <Compile Include="Enums\Direction.cs" />
+    <Compile Include="ExitOrPlayAgain.xaml.cs">
+      <DependentUpon>ExitOrPlayAgain.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HitBox.cs" />
     <Compile Include="PlayerHitBox.cs" />
     <Compile Include="UserControls\UserControlGioco.xaml.cs">
@@ -76,6 +79,10 @@
       <DependentUpon>UserControlSelezionePersonaggio.xaml</DependentUpon>
     </Compile>
     <Page Include="AnimationBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ExitOrPlayAgain.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

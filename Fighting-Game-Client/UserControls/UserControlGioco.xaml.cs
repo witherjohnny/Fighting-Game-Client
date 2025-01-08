@@ -21,16 +21,24 @@ namespace Fighting_Game_Client.UserControls
 {
     public partial class UserControlGioco : UserControl
     {
+
+        public delegate void ExitOrPlayAgainDelegate(string message);
+        public event ExitOrPlayAgainDelegate displayExitOrPlayAgain;
+
         private Player playerLocal = null; // player locale controllato dall'utente
         private Player playerRemote = null; // player remoto aggiornato dal server
 
         private const int FrameRate = 60; //frame al secondo (FPS)
 
-        private UdpClient client = UdpClientSingleton.Instance;
         private List<Rect> obstacles = new List<Rect>(); //lista di ostacoli (pavimento)
         private List<HitBox> hitboxes = new List<HitBox>(); 
         private List<HitBox> remoteHitboxes = new List<HitBox>();
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        System.Windows.Threading.DispatcherTimer gameTimer = new System.Windows.Threading.DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(1000 / FrameRate)
+        };
+        private bool gameEnded = false;
         public UserControlGioco()
         {
             InitializeComponent();
@@ -52,13 +60,11 @@ namespace Fighting_Game_Client.UserControls
             label1.FontWeight = FontWeights.Bold;
             label1.Foreground = new SolidColorBrush(Colors.White);
             label1.Background = Brushes.Transparent;
-            label1.HorizontalContentAlignment = HorizontalAlignment.Center;
 
             label2.FontSize = 14;
             label2.FontWeight = FontWeights.Bold;
             label2.Foreground = new SolidColorBrush(Colors.White);
             label2.Background = Brushes.Transparent;
-            label2.HorizontalContentAlignment = HorizontalAlignment.Center;
         }
 
         private void disegnaPavimento()
@@ -111,10 +117,6 @@ namespace Fighting_Game_Client.UserControls
 
         private void InitializeGame()
         {
-            System.Windows.Threading.DispatcherTimer gameTimer = new System.Windows.Threading.DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(1000 / FrameRate)
-            };
             gameTimer.Tick += GameTimer_Tick;
             gameTimer.Start();
 
@@ -122,6 +124,11 @@ namespace Fighting_Game_Client.UserControls
 
         private void GameTimer_Tick(object sender, EventArgs e)
         {
+            if (gameEnded)
+            {
+                gameTimer.Stop();
+                return;
+            };
             if(playerLocal!= null)
             {
                 if (!playerLocal.getCharacterBox().isAnimating())
@@ -130,6 +137,10 @@ namespace Fighting_Game_Client.UserControls
                 }
                 playerLocal.Update(obstacles);
             }
+            foreach(AttackHitBox hitbox in hitboxes)
+            {
+                hitbox.Update();
+            }
             SendPlayerData();
             SendHitboxesData();
         }
@@ -137,6 +148,7 @@ namespace Fighting_Game_Client.UserControls
 
         private async void ReceivePlayerData()
         {
+
             UdpClient udpClient = UdpClientSingleton.Instance;
 
             string messaggio = "GameLoaded";
@@ -149,14 +161,38 @@ namespace Fighting_Game_Client.UserControls
                 {
                     try
                     {
+
                         IPEndPoint receiveEP = new IPEndPoint(IPAddress.Any, 0);
-                        byte[] dataReceived = client.Receive(ref receiveEP);
+                        byte[] dataReceived = udpClient.Receive(ref receiveEP);
                         string serverResponse = Encoding.ASCII.GetString(dataReceived);
-                        if(serverResponse.StartsWith("Hurt"))
+                        if (serverResponse.StartsWith("Hurt"))
                         {
-                            playerLocal.setAnimation("Hurt", playerLocal.getDirection(), true, false);
+                            this.Dispatcher.Invoke(() =>
+                            {
+                                playerLocal.setAnimation("Hurt", playerLocal.getDirection(), true, false);
+                            });
                         }
-                        
+                        else if (serverResponse.StartsWith("You Win"))
+                        {
+                            this.Dispatcher.Invoke(() =>
+                            {
+                                playerLocal.setAnimation("Rest", playerLocal.getDirection(), true, false);
+                                playerRemote.setAnimation("Dead", playerLocal.getDirection(), true, false);
+                                gameEnded = true;
+                                displayExitOrPlayAgain?.Invoke("You Win");
+                            });
+                        }
+                        else if (serverResponse.StartsWith("You Lose"))
+                        {
+                            this.Dispatcher.Invoke(() =>
+                            {
+                                playerLocal.setAnimation("Dead", playerLocal.getDirection(), true, false);
+                                playerRemote.setAnimation("Rest", playerLocal.getDirection(), true, false);
+                                gameEnded = true;
+                                displayExitOrPlayAgain?.Invoke("You Lose");
+                            });
+                        }
+
                         string[] allData = serverResponse.Split('\n');
 
                         List<HitBox> necessaryHitboxes = new List<HitBox>();
@@ -256,13 +292,15 @@ namespace Fighting_Game_Client.UserControls
 
         private void SendPlayerData()
         {
+            UdpClient udpClient = UdpClientSingleton.Instance;
+
             try
             {
-                if (playerLocal != null && client != null)
+                if (playerLocal != null && udpClient != null)
                 {
                     string message = $"playerInfo;{playerLocal.X};{playerLocal.Y};{playerLocal.getCharacterBox().getDirection()};{playerLocal.getCharacterBox().getCurrentAnimation()}";
                     byte[] data = Encoding.ASCII.GetBytes(message);
-                    client.Send(data, data.Length, ServerSettings.Ip, (int)ServerSettings.Port);
+                    udpClient.Send(data, data.Length, ServerSettings.Ip, (int)ServerSettings.Port);
                 }
             }
             catch (Exception ex)
@@ -272,6 +310,8 @@ namespace Fighting_Game_Client.UserControls
         }
         private void SendHitboxesData()
         {
+            UdpClient udpClient = UdpClientSingleton.Instance;
+
             try
             {
                 string message = "hitboxes\n";
@@ -281,10 +321,10 @@ namespace Fighting_Game_Client.UserControls
                     message+=hitbox.toCSV()+"\n";
                 }
                 message.Trim();
-                if (hitboxes.Count >0 && client != null)
+                if (hitboxes.Count >0 && udpClient != null)
                 {
                     byte[] data = Encoding.ASCII.GetBytes(message);
-                    client.Send(data, data.Length, ServerSettings.Ip, (int)ServerSettings.Port);
+                    udpClient.Send(data, data.Length, ServerSettings.Ip, (int)ServerSettings.Port);
                 }
             }
             catch (Exception ex)
@@ -297,7 +337,7 @@ namespace Fighting_Game_Client.UserControls
         {
             if (playerLocal == null)
                 return;
-
+            if(gameEnded) return;
             //MOVIMENTO
             //corsa a sinistra
             if (e.Key == Key.A)  
@@ -379,8 +419,8 @@ namespace Fighting_Game_Client.UserControls
             // Create a new hitbox for the attack
             int hitboxX = playerLocal.X + (playerLocal.getDirection() == Direction.Right ? 50 : -50);
             int hitboxY = playerLocal.Y + 10;
-            int hitboxWidth = 50;
-            int hitboxHeight = 20;
+            int hitboxWidth = 70;
+            int hitboxHeight = 80;
 
             AttackHitBox hitbox = new AttackHitBox("Attack_1", hitboxX, hitboxY, hitboxWidth, hitboxHeight);
             Canvas.SetLeft(hitbox.getAttackBox(), hitboxX);
@@ -418,8 +458,8 @@ namespace Fighting_Game_Client.UserControls
             // Create a new hitbox for the attack
             int hitboxX = playerLocal.X + (playerLocal.getDirection() == Direction.Right ? 50 : -50);
             int hitboxY = playerLocal.Y + 10;
-            int hitboxWidth = 50;
-            int hitboxHeight = 20;
+            int hitboxWidth = 80;
+            int hitboxHeight = 100;
 
             AttackHitBox hitbox = new AttackHitBox("Attack_2", hitboxX, hitboxY, hitboxWidth, hitboxHeight);
             Canvas.SetLeft(hitbox.getAttackBox(), hitboxX);
@@ -456,13 +496,11 @@ namespace Fighting_Game_Client.UserControls
             playerLocal.setAnimation("Fireball", playerLocal.getDirection(), true, true);
             // Create a new hitbox for the attack
             int hitboxX = playerLocal.X + (playerLocal.getDirection() == Direction.Right ? 5 : -5);
-            int hitboxY = playerLocal.Y + 10;
-            int hitboxWidth = 5;
-            int hitboxHeight = 5;
-
-            AttackHitBox hitbox = new AttackHitBox("Charge", hitboxX, hitboxY, hitboxWidth, hitboxHeight);
-            Canvas.SetLeft(hitbox.getAttackBox(), hitboxX);
-            Canvas.SetTop(hitbox.getAttackBox(), hitboxY);
+            int hitboxY = playerLocal.Y + (int)playerLocal.getCharacterBox().Height/4;
+            int hitboxWidth = 80;
+            int hitboxHeight = 80;
+            AttackHitBox hitbox = new AttackHitBox("Charge", hitboxX, hitboxY, hitboxWidth, hitboxHeight,"FireWizard","Charge",playerLocal.getDirection());
+            
 
             // Add hitbox to the canvas
             if (hitbox.getAttackBox() != null)
@@ -473,30 +511,10 @@ namespace Fighting_Game_Client.UserControls
 
 
             //direzione di movimento (indipendente dal player dopo il lancio)
-            int fireballSpeed = 10 * (playerLocal.getDirection() == Direction.Right ? 2 : -2);
-
-            //muovi la fireball per i frame dell'animazione
-            int framesRemaining = 6;
-            Task.Run(async () =>
+            int fireballSpeed = 12 * (playerLocal.getDirection() == Direction.Right ? 1 : -1);
+            hitbox.SpeedX = fireballSpeed;
+            Task.Delay(1200).ContinueWith(_ =>
             {
-                while (framesRemaining > 0)
-                {
-                    await Task.Delay(100); //100ms per frame
-                    this.Dispatcher.Invoke(() =>
-                    {
-                        //aggiorna la posizione della fireball
-                        hitbox.X += fireballSpeed;
-
-                        //aggiorna la posizione nella canvas
-                        Canvas.SetLeft(hitbox.getAttackBox(), hitbox.X);
-                        Canvas.SetTop(hitbox.getAttackBox(), hitbox.Y);
-
-                        //riduci i frame rimanenti
-                        framesRemaining--;
-                    });
-                }
-
-                //dopo 6 frame, rimuovi la fireball
                 this.Dispatcher.Invoke(() =>
                 {
                     if (hitbox.getAttackBox() != null)
@@ -517,6 +535,8 @@ namespace Fighting_Game_Client.UserControls
         {
             if (playerLocal == null)
                 return;
+            if (gameEnded) return;
+
             if (e.Key == Key.A || e.Key == Key.D)
             {
                 playerLocal.SpeedX = 0;
@@ -560,8 +580,7 @@ namespace Fighting_Game_Client.UserControls
             // Cancel the token to stop the task
             _cancellationTokenSource.Cancel();
 
-            // Dispose of the UdpClient if needed
-            client?.Close();
+           
         }
     }
 }

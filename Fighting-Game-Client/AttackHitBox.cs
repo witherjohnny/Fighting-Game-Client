@@ -19,7 +19,7 @@ namespace Fighting_Game_Client
         {
             SpeedX = 0;
             SpeedY = 0;
-            attackBox = new AnimationBox();
+            attackBox = new AnimationBox(x,y,width,height);
             attackBox.Background = new SolidColorBrush(Color.FromArgb(30, 255, 0, 0));
         }
         public AttackHitBox(string name, int x, int y, int width, int height, string characterName, string animationName, Direction direction) : base(name, x, y, width, height)

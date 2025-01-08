@@ -27,9 +27,12 @@ namespace Fighting_Game_Client
         private Direction direction;
         private bool animating;
         private static readonly object _lock = new object();
-        public AnimationBox()
+        public AnimationBox(int x, int y, int width , int height)
         {
             InitializeComponent();
+            setPosition(x, y);
+            this.Width= width;
+            this.Height= height;
         }
         public AnimationBox(string personaggio, string startingAnimation, int x, int y, double width, double height, Direction direction)
         {

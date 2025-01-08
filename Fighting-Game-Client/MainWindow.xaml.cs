@@ -24,6 +24,7 @@ namespace Fighting_Game_Client
     /// </summary>
     public partial class MainWindow : Window
     {
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -66,13 +67,6 @@ namespace Fighting_Game_Client
             panelContainer.Children.Clear();
             panelContainer.Children.Add(home);
 
-            //all'evento del pulsante play cliccato, viene associata funzione
-            home.PlayClicked += (s, e) => LoadSelezionePersonaggio();
-
-            panelContainer.Children.Clear();
-
-            //mette controllo pagina home nel panel del form principale
-            panelContainer.Children.Add(home);
         }
         private void LoadSelezionePersonaggio()
         {
@@ -95,6 +89,7 @@ namespace Fighting_Game_Client
         {
             //creazione del controllo utente per il gioco, passando il personaggio selezionato
             var gioco = new UserControlGioco();
+            gioco.displayExitOrPlayAgain += displayExitOrPlayAgain;
             gioco.HorizontalAlignment = HorizontalAlignment.Stretch;
             gioco.VerticalAlignment = VerticalAlignment.Stretch;
             gioco.Width = this.Width;
@@ -104,8 +99,31 @@ namespace Fighting_Game_Client
             panelContainer.Children.Clear();
             panelContainer.Children.Add(gioco);
         }
+        private void displayExitOrPlayAgain(string message)
+        {
+            var menu = new ExitOrPlayAgain(message);
+            menu.HorizontalAlignment = HorizontalAlignment.Center;
+            menu.VerticalAlignment = VerticalAlignment.Center;
 
+            menu.Width = this.Width;
+            menu.Height = this.Height;
+            menu.playAgain += () => LoadSelezionePersonaggio();
+            menu.exit += () => leaveAndLoadHome();
+
+            
+            panelContainer.Children.Add(menu);
+        }
+        private void leaveAndLoadHome()
+        {
+            leave();
+            LoadHome();
+        }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            leave();
+        }
+       
+        private void leave()
         {
             string serverAddress = ServerSettings.Ip;
             int serverPort = (int)ServerSettings.Port;
@@ -115,6 +133,7 @@ namespace Fighting_Game_Client
             byte[] data = Encoding.ASCII.GetBytes(messaggio);
 
             udpClient.Send(data, data.Length, serverAddress, serverPort);
+
         }
     }
 }
