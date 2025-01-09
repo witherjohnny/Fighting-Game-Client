@@ -121,7 +121,7 @@ namespace Fighting_Game_Client.UserControls
                 else
                 {
                     //messaggio di errore per risposte non valide
-                    MessageBox.Show("Errore di connessione al server.");
+                    Console.WriteLine("Errore di connessione al server.");
                 }
 
             }

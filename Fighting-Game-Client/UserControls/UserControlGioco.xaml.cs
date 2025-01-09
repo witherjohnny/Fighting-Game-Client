@@ -178,6 +178,7 @@ namespace Fighting_Game_Client.UserControls
                             {
                                 playerLocal.setAnimation("Rest", playerLocal.getDirection(), true, false);
                                 playerRemote.setAnimation("Dead", playerLocal.getDirection(), true, false);
+                                progressBarVitaGiocatore2.Value = 0;
                                 gameEnded = true;
                                 displayExitOrPlayAgain?.Invoke("You Win");
                                 _cancellationTokenSource.Cancel();
@@ -190,6 +191,7 @@ namespace Fighting_Game_Client.UserControls
                             {
                                 playerLocal.setAnimation("Dead", playerLocal.getDirection(), true, false);
                                 playerRemote.setAnimation("Rest", playerLocal.getDirection(), true, false);
+                                progressBarVitaGiocatore1.Value = 0;
                                 gameEnded = true;
                                 displayExitOrPlayAgain?.Invoke("You Lose");
                                 _cancellationTokenSource.Cancel();
@@ -231,7 +233,7 @@ namespace Fighting_Game_Client.UserControls
                                         playerLocal = new Player(id, character, x, y, direction,playerHitbox);
                                         playerLocal.Health = health;
                                         progressBarVitaGiocatore1.Value = health;
-                                        label1.Content = $"P1: {character}";
+                                        label1.Content = $"You: {character}";
                                         canvas.Children.Add(playerLocal.getCharacterBox());
                                     }
                                     else if (playerRemote == null && !isLocal)
@@ -413,6 +415,10 @@ namespace Fighting_Game_Client.UserControls
                     HandleAttack2();
                 }
             }
+            if(e.Key == Key.L)
+            {
+                HandleAreaAttack();
+            }
 
             
         }
@@ -534,6 +540,45 @@ namespace Fighting_Game_Client.UserControls
                 });
             });
         }
+        private void HandleAreaAttack()
+        {
+            playerLocal.setAnimation("AreaAttack", playerLocal.getDirection(), true, true);
+            // Create a new hitbox for the attack
+            int hitboxX = playerLocal.X -30;
+            int hitboxY = playerLocal.Y -30;
+            int hitboxWidth = (int)playerLocal.getCharacterBox().Width+15;
+            int hitboxHeight = (int)playerLocal.getCharacterBox().Height + 15;
+
+            AttackHitBox hitbox = new AttackHitBox("AreaAttack", hitboxX, hitboxY, hitboxWidth, hitboxHeight);
+            Canvas.SetLeft(hitbox.getAttackBox(), hitboxX);
+            Canvas.SetTop(hitbox.getAttackBox(), hitboxY);
+            // Add hitbox to the canvas
+            if (hitbox.getAttackBox() != null)
+                canvas.Children.Add(hitbox.getAttackBox());
+
+            // Add hitbox to the local list
+            hitboxes.Add(hitbox);
+
+            // Remove the hitbox after a delay 
+            Task.Delay(100).ContinueWith(_ =>
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    // Remove from canvas
+                    if (hitbox.getAttackBox() != null)
+                        canvas.Children.Remove(hitbox.getAttackBox());
+
+                    // Remove from the hitbox list
+                    hitboxes.Remove(hitbox);
+
+                    UdpClient udpClient = UdpClientSingleton.Instance;
+                    string messaggio = "removeHitbox;" + hitbox.Id;
+                    byte[] bytes = Encoding.ASCII.GetBytes(messaggio);
+                    udpClient.Send(bytes, bytes.Length, ServerSettings.Ip, (int)ServerSettings.Port);
+                });
+            });
+        }
+
 
         private void canvas_KeyUp_1(object sender, KeyEventArgs e)
         {
