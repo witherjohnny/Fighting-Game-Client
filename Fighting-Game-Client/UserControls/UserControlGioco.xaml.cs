@@ -141,6 +141,7 @@ namespace Fighting_Game_Client.UserControls
             {
                 hitbox.Update();
             }
+
             SendPlayerData();
             SendHitboxesData();
         }
@@ -549,11 +550,12 @@ namespace Fighting_Game_Client.UserControls
         private void HandleFireballAttack()
         {
             playerLocal.setAnimation("Fireball", playerLocal.getDirection(), true, true);
+            
             // Create a new hitbox for the attack
-            int hitboxX = playerLocal.X + (playerLocal.getDirection() == Direction.Right ? 5 : -5);
-            int hitboxY = playerLocal.Y + (int)playerLocal.getCharacterBox().Height/4;
-            int hitboxWidth = 80;
-            int hitboxHeight = 80;
+            int hitboxX = playerLocal.X + (playerLocal.getDirection() == Direction.Right ? 10 : 50);
+            int hitboxY = playerLocal.Y + (int)playerLocal.getCharacterBox().Height/2;
+            int hitboxWidth = 45;
+            int hitboxHeight = 45;
             AttackHitBox hitbox = new AttackHitBox("Charge", hitboxX, hitboxY, hitboxWidth, hitboxHeight,"FireWizard","Charge",playerLocal.getDirection());
             
 
@@ -566,7 +568,7 @@ namespace Fighting_Game_Client.UserControls
 
 
             //direzione di movimento (indipendente dal player dopo il lancio)
-            int fireballSpeed = 12 * (playerLocal.getDirection() == Direction.Right ? 1 : -1);
+            int fireballSpeed = 8 * (playerLocal.getDirection() == Direction.Right ? 1 : -1);
             hitbox.SpeedX = fireballSpeed;
             Task.Delay(1200).ContinueWith(_ =>
             {
@@ -671,8 +673,6 @@ namespace Fighting_Game_Client.UserControls
         {
             // Cancel the token to stop the task
             _cancellationTokenSource.Cancel();
-
-           
         }
     }
 }
