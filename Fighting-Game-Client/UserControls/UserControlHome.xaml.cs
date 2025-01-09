@@ -79,46 +79,51 @@ namespace Fighting_Game_Client.UserControls
             IPEndPoint riceveEP = new IPEndPoint(IPAddress.Any, 0);
 
             byte[] dataReceived = null;
-
-            //gestione thread
-            Task t = Task.Factory.StartNew(() =>
+            while (true)
             {
-                try
+                //gestione thread
+                Task t = Task.Factory.StartNew(() =>
                 {
-                    dataReceived = udpClient.Receive(ref riceveEP);
-                }
-                catch (Exception ex)
+                    try
+                    {
+                        dataReceived = udpClient.Receive(ref riceveEP);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Errore :" + ex.ToString());
+                    }
+                });
+                await t;
+
+                if (dataReceived == null)
+                    return;
+
+                String risposta = Encoding.ASCII.GetString(dataReceived);
+
+                //gestisce la risposta del server
+                if (risposta.StartsWith("Benvenuto"))
                 {
-                    MessageBox.Show("Errore :" + ex.ToString());
+                    //server assegna id es: Benvenuto;1
+                    //split explode controllo e lo mette in una variabile per tutta la durata (stessa cosa da fare con il personaggio)
+                    //dati client deve tenere le sue informazioni, il server prende solo quelle dell'altro
+
+
+                    //il server ha accettato il client
+                    OnPlayClicked();
+                    break;
                 }
-            });
-            await t;
+                else if (risposta.Equals("Server pieno"))
+                {
+                    //mostra un messaggio se il server è pieno
+                    MessageBox.Show("Server pieno. Riprova più tardi.");
+                    break;
+                }
+                else
+                {
+                    //messaggio di errore per risposte non valide
+                    MessageBox.Show("Errore di connessione al server.");
+                }
 
-            if (dataReceived == null)
-                return;
-
-            String risposta = Encoding.ASCII.GetString(dataReceived);
-
-            //gestisce la risposta del server
-            if (risposta.StartsWith("Benvenuto"))
-            {
-                //server assegna id es: Benvenuto;1
-                //split explode controllo e lo mette in una variabile per tutta la durata (stessa cosa da fare con il personaggio)
-                //dati client deve tenere le sue informazioni, il server prende solo quelle dell'altro
-
-
-                //il server ha accettato il client
-                OnPlayClicked();
-            }
-            else if (risposta.Equals("Server pieno"))
-            {
-                //mostra un messaggio se il server è pieno
-                MessageBox.Show("Server pieno. Riprova più tardi.");
-            }
-            else
-            {
-                //messaggio di errore per risposte non valide
-                MessageBox.Show("Errore di connessione al server.");
             }
 
         }

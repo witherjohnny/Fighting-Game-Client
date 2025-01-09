@@ -76,7 +76,7 @@ namespace Fighting_Game_Client.UserControls
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Errore nel caricamento delle animazioni: {ex.Message}", "Errore");
+                Console.WriteLine($"Errore nel caricamento delle animazioni: {ex.Message}", "Errore");
             }
 
         }
@@ -132,35 +132,39 @@ namespace Fighting_Game_Client.UserControls
                 IPEndPoint riceveEP = new IPEndPoint(IPAddress.Any, 0);
 
                 byte[] dataReceived = null;
-
-                //gestione thread
-                Task t = Task.Factory.StartNew(() =>
+                while (true)
                 {
-                    try
+                    //gestione thread
+                    Task t = Task.Factory.StartNew(() =>
                     {
-                        dataReceived = udpClient.Receive(ref riceveEP);
-                    }
-                    catch (Exception ex)
+                        try
+                        {
+                            dataReceived = udpClient.Receive(ref riceveEP);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Errore :" + ex.ToString());
+                        }
+                    });
+                    await t;
+
+                    if (dataReceived == null)
+                        return;
+                    String risposta = Encoding.ASCII.GetString(dataReceived);
+
+                    //gestisce la risposta del server
+                    if (risposta == "Gioco iniziato")
                     {
-                        MessageBox.Show("Errore :" + ex.ToString());
+                        OnPlayClicked(); // passa il personaggio selezionato
+                        break;
                     }
-                });
-                await t;
+                    else
+                    {
+                        Console.WriteLine("In attesa del secondo player");
+                    }
 
-                if (dataReceived == null)
-                    return;
-                String risposta = Encoding.ASCII.GetString(dataReceived);
+                }
 
-                //gestisce la risposta del server
-                if (risposta == "Gioco iniziato")
-                {
-                    OnPlayClicked(); // passa il personaggio selezionato
-                }
-                else
-                {
-                    MessageBox.Show("In attesa del secondo player");
-                }
-                
             }
             else
             {

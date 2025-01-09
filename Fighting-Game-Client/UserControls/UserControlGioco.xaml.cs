@@ -75,7 +75,7 @@ namespace Fighting_Game_Client.UserControls
             // Verifica se il file esiste
             if (!File.Exists(immaginePavimento))
             {
-                MessageBox.Show($"Immagine del pavimento non trovata: {immaginePavimento}", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
+                Console.WriteLine($"Immagine del pavimento non trovata: {immaginePavimento}", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -180,6 +180,8 @@ namespace Fighting_Game_Client.UserControls
                                 playerRemote.setAnimation("Dead", playerLocal.getDirection(), true, false);
                                 gameEnded = true;
                                 displayExitOrPlayAgain?.Invoke("You Win");
+                                _cancellationTokenSource.Cancel();
+
                             });
                         }
                         else if (serverResponse.StartsWith("You Lose"))
@@ -190,6 +192,8 @@ namespace Fighting_Game_Client.UserControls
                                 playerRemote.setAnimation("Rest", playerLocal.getDirection(), true, false);
                                 gameEnded = true;
                                 displayExitOrPlayAgain?.Invoke("You Lose");
+                                _cancellationTokenSource.Cancel();
+
                             });
                         }
 
@@ -575,8 +579,6 @@ namespace Fighting_Game_Client.UserControls
 
         private void Grid_Unloaded(object sender, RoutedEventArgs e)
         {
-            
-
             // Cancel the token to stop the task
             _cancellationTokenSource.Cancel();
 
