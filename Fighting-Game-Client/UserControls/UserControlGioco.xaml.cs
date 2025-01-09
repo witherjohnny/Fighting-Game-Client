@@ -34,6 +34,9 @@ namespace Fighting_Game_Client.UserControls
         private List<HitBox> hitboxes = new List<HitBox>(); 
         private List<HitBox> remoteHitboxes = new List<HitBox>();
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private bool localSecondAttack = false;
+
+
         System.Windows.Threading.DispatcherTimer gameTimer = new System.Windows.Threading.DispatcherTimer
         {
             Interval = TimeSpan.FromMilliseconds(1000 / FrameRate)
@@ -435,7 +438,7 @@ namespace Fighting_Game_Client.UserControls
 
 
             //ATTACCO
-            //attacco 1    se warrior ravvicinato, se mago FIREBALL
+            //attacco ravvicinato   se warrior ravvicinato, se mago FIREBALL
             if (e.Key == Key.J)  
             {
                 if (playerLocal.nome == "FireWizard")
@@ -444,21 +447,38 @@ namespace Fighting_Game_Client.UserControls
                 }
                 else if(playerLocal.nome == "Warrior_2")
                 {
-                    HandleAttack1();
+                    if(localSecondAttack == true)
+                    {
+                        HandleAttack2();
+                        localSecondAttack = false;
+                    }
+                    else
+                    {
+                        HandleAttack1();
+                        localSecondAttack = true;
+                    }
                 }
             }
 
-            //attacco 2    se warrior ravvicinato, se mago JET FLAME
+            //attacco da lontano   se warrior ravvicinato, se mago JET FLAME
             if (e.Key == Key.K) 
             {
                 if (playerLocal.nome == "FireWizard")
                 {
-                    //da cambiare se si vuole aggiungere flame jet, ma sprite player e attacco sono insieme
-                    HandleAttack2();
+                    HandleFlameJet();
                 }
                 else if (playerLocal.nome == "Warrior_2")
                 {
-                    HandleAttack2();
+                    if (localSecondAttack == true)
+                    {
+                        HandleAttack2();
+                        localSecondAttack = false;
+                    }
+                    else
+                    {
+                        HandleAttack1();
+                        localSecondAttack = true;
+                    }
                 }
             }
             if(e.Key == Key.L)
@@ -547,7 +567,68 @@ namespace Fighting_Game_Client.UserControls
             });
         }
 
-        private void HandleFireballAttack()
+
+       private void HandleFlameJet()
+        {
+            // Esegui l'animazione del Flame Jet
+            playerLocal.setAnimation("Flame_Jet", playerLocal.getDirection(), true, true);
+
+            // Calcola la larghezza e l'altezza della hitbox in base al player
+            int hitboxWidth = (int)(playerLocal.getCharacterBox().Width / 2);  // Larghezza metà di quella del player
+            int hitboxHeight = (int)(playerLocal.getCharacterBox().Height / 2); // Altezza metà rispetto al player
+
+            // Calcola la posizione della hitbox
+            int hitboxX;
+            if (playerLocal.getDirection() == Direction.Right)
+            {
+                // Posiziona la hitbox a destra del player, centrata davanti a lui
+                hitboxX = playerLocal.X + (int)(playerLocal.getCharacterBox().Width / 2); // Metà della larghezza del player per centrarla
+            }
+            else
+            {
+                // Posiziona la hitbox a sinistra del player, centrata davanti a lui
+                hitboxX = playerLocal.X - (int)(hitboxWidth / 2) + 30; // Metà della larghezza della hitbox per centrarla
+            }
+
+            int hitboxY = playerLocal.Y + (int)(playerLocal.getCharacterBox().Height / 2);  // Posizione verticale, un po' sopra il fondo del player
+
+            // Crea la hitbox
+            AttackHitBox hitbox = new AttackHitBox("Flame_Jet", hitboxX, hitboxY, hitboxWidth, hitboxHeight);
+
+            // Posiziona la hitbox sul canvas
+            Canvas.SetLeft(hitbox.getAttackBox(), hitboxX);
+            Canvas.SetTop(hitbox.getAttackBox(), hitboxY);
+
+            // Aggiungi la hitbox al canvas
+            if (hitbox.getAttackBox() != null)
+                canvas.Children.Add(hitbox.getAttackBox());
+
+            // Aggiungi la hitbox alla lista locale
+            hitboxes.Add(hitbox);
+
+            // Rimuovi la hitbox dopo un certo tempo (ad esempio, 100 ms)
+            Task.Delay(100).ContinueWith(_ =>
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                // Rimuovi la hitbox dal canvas
+                if (hitbox.getAttackBox() != null)
+                    canvas.Children.Remove(hitbox.getAttackBox());
+
+                // Rimuovi la hitbox dalla lista
+               hitboxes.Remove(hitbox);
+
+                // Comunica la rimozione della hitbox al server
+                UdpClient udpClient = UdpClientSingleton.Instance;
+                string messaggio = "removeHitbox;" + hitbox.Id;
+                byte[] bytes = Encoding.ASCII.GetBytes(messaggio);
+                udpClient.Send(bytes, bytes.Length, ServerSettings.Ip, (int)ServerSettings.Port);
+            });
+        });
+}
+
+
+    private void HandleFireballAttack()
         {
             playerLocal.setAnimation("Fireball", playerLocal.getDirection(), true, true);
             
@@ -587,6 +668,8 @@ namespace Fighting_Game_Client.UserControls
                 });
             });
         }
+
+
         private void HandleAreaAttack()
         {
             playerLocal.setAnimation("AreaAttack", playerLocal.getDirection(), true, true);
