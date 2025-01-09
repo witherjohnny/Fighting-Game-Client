@@ -145,7 +145,6 @@ namespace Fighting_Game_Client.UserControls
             SendHitboxesData();
         }
 
-
         private async void ReceivePlayerData()
         {
 
@@ -232,7 +231,7 @@ namespace Fighting_Game_Client.UserControls
 
                                         playerLocal = new Player(id, character, x, y, direction,playerHitbox);
                                         playerLocal.Health = health;
-                                        progressBarVitaGiocatore1.Value = health;
+                                        updateProgressBar(1);
                                         label1.Content = $"You: {character}";
                                         canvas.Children.Add(playerLocal.getCharacterBox());
                                     }
@@ -242,20 +241,22 @@ namespace Fighting_Game_Client.UserControls
 
                                         playerRemote = new Player(id, character, x, y, direction, playerHitbox);
                                         label2.Content = $"P2: {character}";
-                                        progressBarVitaGiocatore2.Value = health;
                                         playerRemote.Health = health;
+                                        updateProgressBar(2);
                                         canvas.Children.Add(playerRemote.getCharacterBox());
                                     }
                                     else if (id == playerRemote.getId() && !isLocal)
                                     {
                                         playerRemote.setPosition(x, y);
                                         playerRemote.setAnimation(action, direction, false, true);
-                                        progressBarVitaGiocatore2.Value = health;
+                                        playerRemote.Health = health;
+                                        updateProgressBar(2);
                                     }
                                     else if (id == playerLocal.getId() && isLocal)
                                     {
                                         playerLocal.Health = health;
                                         progressBarVitaGiocatore1.Value = health;
+                                        updateProgressBar(1);
                                     }
                                 });
                             }else if(typeOfMessage == "hitboxes")
@@ -294,6 +295,50 @@ namespace Fighting_Game_Client.UserControls
                     }
                 }
             });
+        }
+
+        private void updateProgressBar(int player)
+        {
+            ProgressBar progressBar = null;
+
+            double vita = 0;
+            if (player == 1)
+            {
+                progressBar = progressBarVitaGiocatore1;
+                vita = playerLocal.Health;
+            }
+            else if (player == 2)
+            {
+                progressBar = progressBarVitaGiocatore2;
+                vita = playerRemote.Health;
+            }
+
+            if (progressBar != null)
+            {
+                progressBar.Value = vita;
+
+                //calcolo colore in base alla vita
+                Color startColor = Color.FromRgb(0, 255, 0); //verde (vita piena)
+                Color endColor = Color.FromRgb(255, 0, 0);   //rosso (vita esaurita)
+
+                //calcoliamo il colore intermediario in base al valore della vita
+                byte r = (byte)(startColor.R + (endColor.R - startColor.R) * (100 - vita) / 100);
+                byte g = (byte)(startColor.G + (endColor.G - startColor.G) * (100 - vita) / 100);
+                byte b = (byte)(startColor.B + (endColor.B - startColor.B) * (100 - vita) / 100);
+
+                //colore finale
+                Color currentColor = Color.FromRgb(r, g, b);
+
+                //LinearGradientBrush per il colore di sfondo della ProgressBar
+                LinearGradientBrush gradientBrush = new LinearGradientBrush();
+                gradientBrush.StartPoint = new Point(0, 0);
+                gradientBrush.EndPoint = new Point(1, 0);
+                gradientBrush.GradientStops.Add(new GradientStop(currentColor, 0.0));
+                gradientBrush.GradientStops.Add(new GradientStop(currentColor, 1.0));
+
+                //colore di sfondo della ProgressBar
+                progressBar.Foreground = gradientBrush;
+            }
         }
 
         private void SendPlayerData()
